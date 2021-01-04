@@ -1,5 +1,5 @@
 import * as expressive from 'https://raw.githubusercontent.com/NMathar/deno-express/master/mod.ts';
-import * as jwt from './helpers/jwt.ts';
+import * as jwt from './helpers/jwt.helpers.ts';
 
 const port = 8001;
 const app = new expressive.App();

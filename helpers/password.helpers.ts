@@ -1,5 +1,7 @@
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.2.4/mod.ts";
 
+// Fichier des différentes fonctions concernant le mot de passe
+
 const hash = async(password: string):Promise<string>=>{
     return await bcrypt.hash(password);
 }
