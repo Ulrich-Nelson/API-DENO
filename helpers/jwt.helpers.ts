@@ -1,6 +1,8 @@
 import { create, verify, decode, getNumericDate } from "https://deno.land/x/djwt@v2.0/mod.ts";
 import { config } from '../config/config.ts';
 
+// Fichier des différentes fonctions concernant le token
+
 const {
     JWT_TOKEN_SECRET,
     JWT_ACCESS_TOKEN_EXP,
