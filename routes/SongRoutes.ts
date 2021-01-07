@@ -5,6 +5,7 @@ import { SongControllers } from "../controllers/SongControllers.ts";
 
 const route: Application = opine();
 
-route.get('/', SongControllers.get)
+route.get('/', SongControllers.getAllSongs);
+route.get('/:id', SongControllers.getOneSongs);
 
-export { route as SongRouter }
+export { route as SongRouter };

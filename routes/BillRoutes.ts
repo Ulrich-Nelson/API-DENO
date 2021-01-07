@@ -5,6 +5,6 @@ import { BillControllers } from "../controllers/BillControllers.ts";
 
 const route: Application = opine();
 
-route.get('/', BillControllers.get)
+route.get('/', BillControllers.getAllBill);
 
 export { route as BillRouter }

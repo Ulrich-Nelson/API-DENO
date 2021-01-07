@@ -6,8 +6,8 @@ import { UserRouter } from "./UserRoutes.ts";
 
 const route = opine();
 
-route.use('/', UserRouter)
-route.use('/songs', SongRouter)
-route.use('/bills', BillRouter)
+route.use('/', UserRouter);
+route.use('/songs', SongRouter);
+route.use('/bills', BillRouter);
 
-export { route as RouteIndex }
+export { route as RouteIndex };

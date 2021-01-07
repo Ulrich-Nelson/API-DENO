@@ -5,6 +5,15 @@ import { UserControllers } from "../controllers/UserControllers.ts";
 
 const route: Application = opine();
 
-route.get('/', UserControllers.get)
+route.post('/login', UserControllers.login);
+route.post('/register', UserControllers.register);
+route.post('/subscription', UserControllers.subscription);
+route.put('/user', UserControllers.editUser);
+route.delete('/user/off', UserControllers.logout);
+route.post('/user/child', UserControllers.createChild);
+route.get('/user/child', UserControllers.getAllChild);
+route.delete('/user/child', UserControllers.deleteChild);
+route.put('/user/cart', UserControllers.addCart);
+route.delete('/user', UserControllers.deleteUser);
 
-export { route as UserRouter }
+export { route as UserRouter };
