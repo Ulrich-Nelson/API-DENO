@@ -5,7 +5,7 @@ import { RouteIndex } from "./routes/index.ts";
 const port: number = 8001;
 const app = opine();
 
-app.use( RouteIndex )
+app.use( RouteIndex );
 
 app.listen(port);
 // deno run --allow-net --allow-read --unstable main.ts
