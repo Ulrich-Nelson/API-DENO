@@ -1,4 +1,7 @@
+import { sendResponse } from "../helpers/response.helpers.ts";
 import { Request, Response } from "https://deno.land/x/opine@1.0.2/src/types.ts";
+import EmailException from "../exceptions/EmailExceptions.ts";
+import { UserModels } from "../models/UserModels.ts";
 
 export class UserControllers {
 
@@ -17,7 +20,26 @@ export class UserControllers {
      * @param res 
      */
     static register = async(req: Request, res: Response) => {
-
+        try {
+            const {firstname, lastname, email, password, date_naissance, sexe} = req.body;
+            // Vérification de si toutes les données existe
+            if (!firstname || !lastname || !email || !password || !date_naissance || !sexe) throw new Error ('Une ou plusieurs données obligatoire sont manquantes');
+            const user = new UserModels(firstname, lastname, email, password, sexe, 'tuteur', date_naissance, 0);
+            await user.insert();
+            console.log(user);
+            const body = {
+                error: false, 
+                message: "L'utilisateur a bien été créé avec succès",
+                user: {}
+            }
+            sendResponse(res, 200, body)
+        } catch (err) {
+            console.log(err.message);
+            const body = { error: true, message: err.message }
+            if (err.message === 'Une ou plusieurs données obligatoire sont manquantes')sendResponse(res, 400, body);
+            if (err.message === 'Un compte utilisant cette adresse mail est déjà enregistré')sendResponse(res, 409, body);
+            if (err.message === 'Email/password incorrect')sendResponse(res, 400, body);
+        }
     }
 
     /**

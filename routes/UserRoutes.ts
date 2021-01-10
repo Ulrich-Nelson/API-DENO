@@ -1,12 +1,12 @@
-import { opine } from "https://deno.land/x/opine@1.0.2/mod.ts";
-import { Application } from "https://deno.land/x/opine@1.0.2/src/types.ts";
+import { opine, Application } from "https://deno.land/x/opine@1.0.2/mod.ts";
 import { UserControllers } from "../controllers/UserControllers.ts";
+import { userMiddleware } from "../middelwares/UserMiddelwares.ts";
 
 
 const route: Application = opine();
 
 route.post('/login', UserControllers.login);
-route.post('/register', UserControllers.register);
+route.post('/register', userMiddleware, UserControllers.register);
 route.post('/subscription', UserControllers.subscription);
 route.put('/user', UserControllers.editUser);
 route.delete('/user/off', UserControllers.logout);

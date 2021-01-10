@@ -3,5 +3,7 @@ export default class PasswordException extends Error {
         super(message)
     }
 
-    // Toutes les fonctions de vérification du password
+    static isValidPassword(password: string): boolean {
+        return password.length >= 6;
+    }
 }
