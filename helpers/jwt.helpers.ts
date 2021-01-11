@@ -14,11 +14,14 @@ const header: any = {
     typ: "JWT",
 };
 
+/**
+ * Génère le token sur la base du user
+ * @param user 
+ */
 const getAuthToken = async (user: any) => {
     const payload: any = {
-        iss: "deno-imie-api",
-        id: user.id,
-        name: user.name,
+        iss: "API-DENO",
+        id: user._id,
         email: user.email,
         roles: user.role,
         exp: getNumericDate(new Date().getTime() + parseInt(JWT_ACCESS_TOKEN_EXP)),
@@ -27,9 +30,13 @@ const getAuthToken = async (user: any) => {
     return await create(header, payload, JWT_TOKEN_SECRET);
 };
 
+/**
+ * Génère le refreshtoken sur la base du user
+ * @param user 
+ */
 const getRefreshToken = async(user: any) => {
     const payload: any = {
-        iss: "deno-imie-api",
+        iss: "API-DENO",
         id: user.id,
         exp: getNumericDate(new Date().getTime() + parseInt(JWT_REFRESH_TOKEN_EXP)),
     };
@@ -37,6 +44,10 @@ const getRefreshToken = async(user: any) => {
     return await create(header, payload, JWT_TOKEN_SECRET);
 };
 
+/**
+ * Récupération du payload du token
+ * @param token 
+ */
 const getJwtPayload = async(token: string): Promise < any | null > => {
     try {
         const jwtObject = await verify(token, JWT_TOKEN_SECRET, header.alg);
