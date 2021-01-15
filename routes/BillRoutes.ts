@@ -1,5 +1,4 @@
-import { opine } from "https://deno.land/x/opine@1.0.2/mod.ts";
-import { Application, Request, Response } from "https://deno.land/x/opine@1.0.2/src/types.ts";
+import { opine, Application } from "https://deno.land/x/opine@1.0.2/mod.ts";
 import { BillControllers } from "../controllers/BillControllers.ts";
 
 
