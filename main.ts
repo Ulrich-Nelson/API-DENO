@@ -21,5 +21,5 @@ app.get('*', (req: Request, res: Response)=> {
 });
 
 app.listen(port);
-// deno run --allow-net --allow-read --unstable main.ts
+// deno run --allow-net --allow-read --unstable main.ts OU  (denon start)
 console.log("app running at: http://localhost:" + port);
