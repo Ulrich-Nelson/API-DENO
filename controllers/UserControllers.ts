@@ -1,7 +1,7 @@
 import { UserModels } from "../models/UserModels.ts";
-import { getAuthToken } from "../helpers/jwt.helpers.ts";
 import { sendResponse } from "../helpers/response.helpers.ts";
 import { Request, Response } from "https://deno.land/x/opine@1.0.2/src/types.ts";
+import UserInterfaces from "../interfaces/UserInterfaces.ts";
 
 export class UserControllers {
 
@@ -22,7 +22,7 @@ export class UserControllers {
             const user = await UserModels.login(email, password);
 
             // Génération du token 
-            const token = await getAuthToken(user);
+            const token = await UserModels.generateAuthToken(user);
 
             // Création de la réponse
             const body = {
@@ -127,7 +127,26 @@ export class UserControllers {
      * @param res 
      */
     static logout = async(req: Request, res: Response) => {
+        try {
 
+            // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
+            const request: any = req;
+            const user: UserInterfaces = request.user;
+
+            // Suppression du token et mise à jour du token
+            user.token = '';
+            user.refreshToken = '';
+            await UserModels.update(user);
+
+            const body = {
+                error: false, 
+                message: "L'utilisateur a été déconnecté avec succès",
+            }
+            // Envoi de la réponse
+            sendResponse(res, 200, body)
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     /**
