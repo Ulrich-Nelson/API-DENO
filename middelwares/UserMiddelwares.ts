@@ -8,6 +8,7 @@ import { sendResponse } from "../helpers/response.helpers.ts";
 
 const middleware: Application = opine();
 
+//middelware pour la vérification des données postées
 middleware.use((req: Request, res: Response, next: NextFunction) => {
     try {
         const {email, password, date_naissance, sexe} = req.body;
@@ -21,5 +22,6 @@ middleware.use((req: Request, res: Response, next: NextFunction) => {
         if (err.message === 'Une ou plusieurs données sont erronées')sendResponse(res, 409, body);
     }
 })
+
 
 export {middleware as userMiddleware}; 

@@ -145,6 +145,7 @@ export class UserControllers {
      * @param res 
      */
     static createChild = async(req: Request, res: Response) => {
+        
 
     }
 
