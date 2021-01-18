@@ -4,6 +4,8 @@ import UserInterfaces from "../interfaces/UserInterfaces.ts";
 import { userRoleType, sexeType, subscriptionType } from "../types/roleTypes.ts";
 import { Bson } from "https://deno.land/x/mongo@v0.20.1/mod.ts";
 import { getAuthToken } from "../helpers/jwt.helpers.ts";
+
+
 export class UserModels implements UserInterfaces {
     
     private userdb: any;
@@ -39,6 +41,7 @@ export class UserModels implements UserInterfaces {
         this.email = email;
         this.password = password;
         this.sexe = sexe;
+        
         this.role = role;
         this.dateNaissance = new Date (dateNaissance);
         this.subscription = subscription;
@@ -80,12 +83,11 @@ export class UserModels implements UserInterfaces {
         }
         if(this.id_parent) {
             const nbChild  = await this.userdb.count({id_parent: this.id_parent});
-            console.log(nbChild)
-             if(nbChild === 3) throw new Error("Vous avez dépassé le cota de trois enfants");
+             if(nbChild === 4) throw new Error("Vous avez dépassé le cota de trois enfants");
              console.log(nbChild)
              Object.assign(toInsert, { id_parent: this.id_parent });
         }
-        this._id = await this.userdb.insertOne(toInsert);
+        this._id =  this.userdb.insertOne(toInsert);
     };
 
 

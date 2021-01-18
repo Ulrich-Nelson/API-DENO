@@ -170,7 +170,7 @@ export class UserControllers {
             // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
             const request: any = req;
             const parent: UserInterfaces = request.user;
-            if(parent.role !== 'tuteur')throw new Error ("Vos droits d'accès ne permettent pas d'accéder à la ressource");
+            if(parent.role !== 'tuteur')throw new Error ('Vos droits d\'accès ne permettent pas d\'accéder à la ressource');
             // Récupération de toutes les données du body
             const {firstname, lastname, email, password, date_naissance, sexe} = req.body;
 
@@ -180,7 +180,6 @@ export class UserControllers {
             // Instanciation d'un utilisateur (enfant)
             const user = new UserModels(firstname, lastname, email, password, sexe, 'enfant', date_naissance, 0, <string> parent._id);
 
-            
             // Insertion de l'utilisateur
             await user.insert();
 
