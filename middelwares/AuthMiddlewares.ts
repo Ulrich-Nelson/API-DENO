@@ -1,34 +1,34 @@
-import * as expressive from 'https://raw.githubusercontent.com/NMathar/deno-express/master/mod.ts';
-import { Application, NextFunction } from "https://deno.land/x/opine@1.0.2/src/types.ts";
-import { opine } from "https://deno.land/x/opine@1.0.2/src/opine.ts";
+import { opine, Application } from "https://deno.land/x/opine@1.0.2/mod.ts";
+import { Request, Response, NextFunction } from "https://deno.land/x/opine@1.0.2/src/types.ts";
 import { getJwtPayload } from "../helpers/jwt.helpers.ts";
+import { sendResponse } from "../helpers/response.helpers.ts";
+import { UserModels } from "../models/UserModels.ts";
+import { jwtPayload } from "../types/jwtTypes.ts";
 
-
-
-// Fichier pour vérifier si l'utilisateur utilise bien un token ou non
 const middleware: Application = opine();
 
-//récupération du header
-const extractBearerToken = (headerValue: string) => {
-    if (typeof headerValue !== 'string') {
-        return false
+//récupération tu token du l'utilisateur
+middleware.use(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Récupération du token
+        const token = req.headers.get('Authorization')?.replace('Bearer ', '');
+
+        // Récupération du payload si le token existe
+        const payload: jwtPayload = (token) ? await getJwtPayload(token) : null;
+        if (!payload) throw new Error("Votre token n'est pas correct");
+
+        // Récupération de l'utilisateur pour le mettre dans le req et y avoir dans les routes après
+        const user = await UserModels.getOneUser(payload.id, token);
+        if (!user) throw new Error("Votre token n'est pas correct");
+        Object.assign(req, {user: user});
+
+        // Si tout se passe bien suite de la requête
+        next();
+    } catch (err) {
+        const body = { error: true, message: err.message };
+        if (err.message === "Votre token n'est pas correct") sendResponse(res, 401, body);
     }
-    const matches = headerValue.match(/(bearer)\s+(\S+)/i)
-    return matches && matches[2]
-}
+})
 
-//Vos droits d'accès ne permettent pas d'accéder à la ressource
-// middleware.use((req: Request, _res: Response, next: NextFunction) => {
-//     try {
-//     //Récupération du token
-//     const token = req.headers && extractBearerToken(req.headers)
-//     //Présence d'un token
-//     if (!token) throw new Error("Vos droits d'accès ne permettent pas d'accéder à la ressource");
-//     getJwtPayload(token)
-//     next()
-//     } catch (err) {
-//     }
-// })
+export {middleware as authMiddleware}; 
 
-
-export {middleware as authMiddleware};

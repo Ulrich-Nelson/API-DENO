@@ -1,6 +1,5 @@
-// configuration pour lancer le serveur avec la commande (denon start)
 import { DenonConfig } from "https://deno.land/x/denon@2.4.6/mod.ts";
-
+// configuration pour lancer le serveur avec la commande (denon start)
 const config: DenonConfig = {
   scripts: {
     start: {
@@ -11,7 +10,5 @@ const config: DenonConfig = {
     },
   },
 };
-
-
 
 export default config;

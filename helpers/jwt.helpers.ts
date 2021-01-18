@@ -37,7 +37,7 @@ const getAuthToken = async (user: any) => {
 const getRefreshToken = async(user: any) => {
     const payload: any = {
         iss: "API-DENO",
-        id: user.id,
+        id: user._id,
         exp: getNumericDate(new Date().getTime() + parseInt(JWT_REFRESH_TOKEN_EXP)),
     };
 
@@ -50,12 +50,13 @@ const getRefreshToken = async(user: any) => {
  */
 const getJwtPayload = async(token: string): Promise < any | null > => {
     try {
-        const jwtObject = await verify(token, JWT_TOKEN_SECRET, header.alg);
-        if (jwtObject && jwtObject.payload) {
-            return jwtObject.payload;
+        const payload = await verify(token, JWT_TOKEN_SECRET, header.alg);
+        if (payload) {
+            return payload;
         }
-    } catch (err) {}
-    return null;
+    } catch (err) {
+        return null
+    }
 };
 
 export { getAuthToken, getRefreshToken, getJwtPayload };

@@ -3,6 +3,7 @@ import { userRoleType, sexeType, subscriptionType } from "../types/roleTypes.ts"
 export default interface UserInterfaces {
 
     _id?: { $oid: string } |string | null;
+    id_parent?: { $oid: string } |string | null;
     firstname: string;
     lastname: string;
     email: string;
@@ -15,8 +16,8 @@ export default interface UserInterfaces {
     createdAt: Date;
     updateAt: Date;
 
-    token?: string;
-    refreshToken?: string;
+    token: string;
+    refreshToken: string;
 
     lastLogin: Date;
     attempt: number;
