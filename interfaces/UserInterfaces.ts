@@ -15,8 +15,8 @@ export default interface UserInterfaces {
     createdAt: Date;
     updateAt: Date;
 
-    token?: string;
-    refreshToken?: string;
+    token: string;
+    refreshToken: string;
 
     lastLogin: Date;
     attempt: number;
