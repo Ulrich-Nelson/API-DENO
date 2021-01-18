@@ -18,17 +18,17 @@ const extractBearerToken = (headerValue: string) => {
 }
 
 //Vos droits d'accès ne permettent pas d'accéder à la ressource
-middleware.use((req: Request, _res: Response, next: NextFunction) => {
-    try {
-    //Récupération du token
-    const token = req.headers && extractBearerToken(req.headers)
-    //Présence d'un token
-    if (!token) throw new Error("Vos droits d'accès ne permettent pas d'accéder à la ressource");
-    getJwtPayload(token)
-    next()
-    } catch (err) {
-    }
-})
+// middleware.use((req: Request, _res: Response, next: NextFunction) => {
+//     try {
+//     //Récupération du token
+//     const token = req.headers && extractBearerToken(req.headers)
+//     //Présence d'un token
+//     if (!token) throw new Error("Vos droits d'accès ne permettent pas d'accéder à la ressource");
+//     getJwtPayload(token)
+//     next()
+//     } catch (err) {
+//     }
+// })
 
 
 export {middleware as authMiddleware};
