@@ -108,8 +108,10 @@ export class UserModels implements UserInterfaces {
     static async getAllchild(user: UserInterfaces, options?:any): Promise <UserInterfaces[] | void>{
         try {
 
-           const allChild = await this.userdb.find({id_parent: user._id}).toArray()
-           
+           const allChild = await this.userdb.find({id_parent: user._id}, {}).toArray()
+            
+            // {"email":0, "attempt":0, "refreshToken:":0,"id_parent:":0,
+            //  "password:":0, "token:":0}
            //enlever les données non désirables
            allChild.map((target) =>{
                Object.assign(target, {_id: target._id});
