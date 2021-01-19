@@ -119,22 +119,17 @@ export class UserControllers {
     static editUser = async(req: Request, res: Response) => {
         try {
             //Récupération de toutes les données du body
-            const {firstname, lastname, email, date_naissance, sexe} = req.body;
-
-            //vérifier que les data ne sont pas vide
-            if (!firstname || !lastname || !email  || !date_naissance || !sexe) throw new Error ('Une ou plusieurs données obligatoire sont manquantes');
+            const {firstname, lastname, date_naissance, sexe} = req.body;
 
             // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans la requête
             const request: any = req;
             const user: UserInterfaces = request.user;
-            console.log(firstname)
 
             // Modifier les valeurs les propriétés de l'utilisateur courant
-            user.firstname = firstname;
-            user.lastname = lastname;
-            user.email = email;
-            user.dateNaissance = date_naissance;
-            user.sexe = sexe;
+            if (firstname) user.firstname = firstname;
+            if (lastname) user.lastname = lastname;
+            if (date_naissance) user.dateNaissance = date_naissance;
+            if (sexe) user.sexe = sexe;
 
             //Mettre à jour ses différentes valeurs
             await UserModels.update(user);
@@ -241,6 +236,7 @@ export class UserControllers {
 
             // Envoi de la réponse
             if (err.message === 'Une ou plusieurs données obligatoire sont manquantes')sendResponse(res, 400, body);
+            if (err.message === "Vous avez dépassé le cota de trois enfants")sendResponse(res, 409, body);
             if (err.message === 'Un compte utilisant cette adresse mail est déjà enregistré')sendResponse(res, 409, body);
             if (err.message === "Vos droits d'accès ne permettent pas d'accéder à la ressource")sendResponse(res, 403, body);
         }

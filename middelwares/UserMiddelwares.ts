@@ -11,17 +11,20 @@ const middleware: Application = opine();
 //middelware pour la vérification des données postées
 middleware.use((req: Request, res: Response, next: NextFunction) => {
     try {
-
-        // Vérification de l'existance et du format des données
         const {firstname, lastname, email, password, date_naissance, sexe} = req.body;
-
-        // Vérification de si toutes les données existe
-        if (!firstname || !lastname || !email || !password || !date_naissance || !sexe) throw new Error ('Une ou plusieurs données obligatoire sont manquantes');
-
-        if (!EmailException.checkEmail(email)) throw new EmailException('Une ou plusieurs données sont erronées');
-        if (!PasswordException.isValidPassword(password)) throw new PasswordException('Une ou plusieurs données sont erronées');
-        if (!DateException.checkDate(date_naissance)) throw new DateException('Une ou plusieurs données sont erronées');
-        if (sexe !== 'Homme' && sexe !== 'Femme') throw new Error('Une ou plusieurs données sont erronées');
+        
+        // Vérification de si toutes les données existe et de leur format en fonction de la requête
+        if (req.method === 'POST') {
+            if (!firstname || !lastname || !email || !password || !date_naissance || !sexe) throw new Error ('Une ou plusieurs données obligatoire sont manquantes');
+            if (!EmailException.checkEmail(email)) throw new EmailException('Une ou plusieurs données sont erronées');
+            if (!PasswordException.isValidPassword(password)) throw new PasswordException('Une ou plusieurs données sont erronées');
+            if (!DateException.checkDate(date_naissance)) throw new DateException('Une ou plusieurs données sont erronées');
+            if (sexe !== 'Homme' && sexe !== 'Femme') throw new Error('Une ou plusieurs données sont erronées');
+        } else {
+            if (!firstname && !lastname && !date_naissance && !sexe) throw new Error ('Une ou plusieurs données obligatoire sont manquantes');
+            if (date_naissance && !DateException.checkDate(date_naissance)) throw new DateException('Une ou plusieurs données sont erronées');
+            if (sexe && sexe !== 'Homme' && sexe !== 'Femme') throw new Error('Une ou plusieurs données sont erronées');
+        }  
 
         // Si tout se passe bien suite de la requête
         next()
