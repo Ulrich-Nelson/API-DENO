@@ -102,6 +102,36 @@ export class UserModels implements UserInterfaces {
     }
 
     /**
+     * récupération de tous les enfants d'un parent
+     * @param user UserInterface
+     */
+    static async getAllchild(user: UserInterfaces, options?:any): Promise <UserInterfaces[] | void>{
+        try {
+
+           const allChild = await this.userdb.find({id_parent: user._id}).toArray()
+           
+           //enlever les données non désirables
+           allChild.map((target) =>{
+               Object.assign(target, {_id: target._id});
+               target._id = undefined;
+               target.id_parent = undefined;               
+           })
+           console.log(allChild)
+        // retourner les données si elles existent
+        if (allChild) return allChild;
+        else return [];
+
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+     
+
+
+
+
+    /**
      * Génération du token et modification en base de donnée
      * @param user UserInterface
      */
@@ -176,6 +206,5 @@ export class UserModels implements UserInterfaces {
         if (user) return user;
         else return null;
     }
-
     
 }

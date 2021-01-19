@@ -181,6 +181,18 @@ export class UserControllers {
      * @param res 
      */
     static getAllChild = async(req: Request, res: Response) => {
+        try {
+
+            //Récupération de l'utilisateur courant
+            const request: any = req;
+            const user: UserInterfaces = request.user;
+
+            //récupérer tous les  enfants du parent associé
+            await UserModels.getAllchild(user)
+
+        } catch (err) {
+            
+        }
 
     }
 
