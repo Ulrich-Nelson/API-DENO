@@ -188,8 +188,15 @@ export class UserControllers {
             const user: UserInterfaces = request.user;
 
             //récupérer tous les  enfants du parent associé
-            await UserModels.getAllchild(user)
+           const allchild = await UserModels.getAllchild(user)
 
+           // Création de la réponse
+           const body = {
+            error: false, 
+            users: allchild }
+
+            // Envoi de la réponse
+           sendResponse(res, 200, body);
         } catch (err) {
             
         }
