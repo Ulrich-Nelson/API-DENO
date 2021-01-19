@@ -6,4 +6,4 @@ export type jwtPayload = {
     email: string,
     roles: userRoleType,
     exp: number
-}
+} 

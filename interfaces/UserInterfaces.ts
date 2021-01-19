@@ -3,6 +3,7 @@ import { userRoleType, sexeType, subscriptionType } from "../types/roleTypes.ts"
 export default interface UserInterfaces {
 
     _id?: { $oid: string } |string | null;
+    id_parent?: { $oid: string } |string | null;
     firstname: string;
     lastname: string;
     email: string;

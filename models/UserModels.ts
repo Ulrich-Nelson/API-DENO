@@ -4,13 +4,15 @@ import UserInterfaces from "../interfaces/UserInterfaces.ts";
 import { userRoleType, sexeType, subscriptionType } from "../types/roleTypes.ts";
 import { Bson } from "https://deno.land/x/mongo@v0.20.1/mod.ts";
 import { getAuthToken } from "../helpers/jwt.helpers.ts";
+
+
 export class UserModels implements UserInterfaces {
     
     private userdb: any;
     private static userdb = db.collection < UserInterfaces > ("users");
     
     _id: string | null | { $oid: string; } | undefined;
-    
+    id_parent: string | { $oid: string; } | undefined;
     firstname: string;
     lastname: string;
     email: string;
@@ -31,7 +33,7 @@ export class UserModels implements UserInterfaces {
 
     // constructor(firstname: string, lastname: string, email: string, password: string, sexe: sexeType, role: userRoleType, dateNaissance: Date, subscription: subscriptionType, 
     //     createdAt: Date = new Date(), updateAt: Date = new Date(), lastLogin: Date = new Date(), attempt: number = 0, token = '', refreshToken = '' ) {
-    constructor(firstname: string, lastname: string, email: string, password: string, sexe: sexeType, role: userRoleType, dateNaissance: Date, subscription: subscriptionType, 
+    constructor(firstname: string, lastname: string, email: string, password: string, sexe: sexeType, role: userRoleType, dateNaissance: Date, subscription: subscriptionType, id_parent?: { $oid: string } |string,
         createdAt: Date = new Date(), updateAt: Date = new Date(), lastLogin: Date = new Date(), attempt: number = 0, token = '', refreshToken = '' ) {
         this.userdb = db.collection < UserInterfaces > ("users");
         this.firstname = firstname;
@@ -39,6 +41,7 @@ export class UserModels implements UserInterfaces {
         this.email = email;
         this.password = password;
         this.sexe = sexe;
+        
         this.role = role;
         this.dateNaissance = new Date (dateNaissance);
         this.subscription = subscription;
@@ -48,6 +51,7 @@ export class UserModels implements UserInterfaces {
         this.attempt = attempt;
         this.token = token;
         this.refreshToken = refreshToken;
+        if(this.role === 'enfant') this.id_parent = id_parent
     }
 
     get id(): null | string | {$oid: string} | undefined {
@@ -61,7 +65,7 @@ export class UserModels implements UserInterfaces {
         const alreadyExist = await this.userdb.findOne({email: this.email});
         if (alreadyExist) throw new Error('Un compte utilisant cette adresse mail est déjà enregistré');
         this.password = await hash(this.password);
-        this._id = await this.userdb.insertOne({
+        const toInsert = {
             firstname : this.firstname,
             lastname : this.lastname,
             email : this.email,
@@ -76,8 +80,17 @@ export class UserModels implements UserInterfaces {
             attempt : 0,
             token: this.token,
             refreshToken: this.refreshToken,
-        });
+        }
+        if(this.id_parent) {
+            const nbChild  = await this.userdb.count({id_parent: this.id_parent});
+             if(nbChild === 4) throw new Error("Vous avez dépassé le cota de trois enfants");
+             console.log(nbChild)
+             Object.assign(toInsert, { id_parent: this.id_parent });
+        }
+        this._id =  this.userdb.insertOne(toInsert);
     };
+
+
 
     /**
      * Modification d'un utilisateur
@@ -151,6 +164,7 @@ export class UserModels implements UserInterfaces {
         return (user);
     }
     
+    
     /**
      * Récupération d'un utilisateur par son id et optionnelement son token pour s'assurer que c'est un user connecté.
      * @param id MongoDB ID
@@ -165,5 +179,6 @@ export class UserModels implements UserInterfaces {
         if (user) return user;
         else return null;
     }
+
     
 }
