@@ -117,7 +117,39 @@ export class UserControllers {
      * @param res 
      */
     static editUser = async(req: Request, res: Response) => {
+        try {
+            //Récupération de toutes les données du body
+            const {firstname, lastname, email, date_naissance, sexe} = req.body;
 
+            //vérifier que les data ne sont pas vide
+            if (!firstname || !lastname || !email  || !date_naissance || !sexe) throw new Error ('Une ou plusieurs données obligatoire sont manquantes');
+
+            // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans la requête
+            const request: any = req;
+            const user: UserInterfaces = request.user;
+            console.log(firstname)
+
+            // Modifier les valeurs les propriétés de l'utilisateur courant
+            user.firstname = firstname;
+            user.lastname = lastname;
+            user.email = email;
+            user.dateNaissance = date_naissance;
+            user.sexe = sexe;
+
+            //Mettre à jour ses différentes valeurs
+            await UserModels.update(user);
+
+            // Création de la réponse
+            const body = {
+                error: false, 
+                message: "Vos données ont été mises à jour",
+            }
+            // Envoi de la réponse
+            sendResponse(res, 200, body)
+        } catch (err) {
+            const body = { error: true, message: err.message }
+            if (err.message === 'Une ou plusieurs données obligatoire sont manquantes')sendResponse(res, 409, body);
+        }
     }
 
     /**
