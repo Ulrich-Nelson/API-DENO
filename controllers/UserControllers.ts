@@ -2,6 +2,7 @@ import { UserModels } from "../models/UserModels.ts";
 import { sendResponse } from "../helpers/response.helpers.ts";
 import { Request, Response } from "https://deno.land/x/opine@1.0.2/src/types.ts";
 import UserInterfaces from "../interfaces/UserInterfaces.ts";
+import { sendMail } from "../helpers/email.helpers.ts";
 
 export class UserControllers {
 
@@ -70,6 +71,9 @@ export class UserControllers {
             
             // Insertion de l'utilisateur
             await user.insert();
+
+            // Envoi du mail à l'utilisateur
+            await sendMail(user.email);
 
             // Création de la réponse
             const body = {
@@ -176,6 +180,9 @@ export class UserControllers {
 
             // Insertion de l'utilisateur
             await user.insert();
+
+            // Envoi du mail à l'utilisateur
+            await sendMail(user.email);
 
             // Création de la réponse
             const body = {
