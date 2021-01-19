@@ -7,10 +7,11 @@ import { jwtPayload } from "../types/jwtTypes.ts";
 
 const middleware: Application = opine();
 
+//récupération tu token du l'utilisateur
 middleware.use(async (req: Request, res: Response, next: NextFunction) => {
     try {
         // Récupération du token
-        const token = req.headers.get('authorization')?.replace('Bearer ', '');
+        const token = req.headers.get('Authorization')?.replace('Bearer ', '');
 
         // Récupération du payload si le token existe
         const payload: jwtPayload = (token) ? await getJwtPayload(token) : null;
