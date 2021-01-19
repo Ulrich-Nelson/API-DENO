@@ -45,7 +45,7 @@ export class UserControllers {
             sendResponse(res, 200, body)
         } catch (err) {
             // Création de la réponse d'erreur
-            const body = { error: true, message: err.message }
+            const body = { error: true, message: err.message };
             
             // Envoi de la réponse
             if (err.message === 'Email/password manquants')sendResponse(res, 400, body);
@@ -64,9 +64,6 @@ export class UserControllers {
         try {
             // Récupération de toutes les données du body
             const {firstname, lastname, email, password, date_naissance, sexe} = req.body;
-
-            // Vérification de si toutes les données existe
-            if (!firstname || !lastname || !email || !password || !date_naissance || !sexe) throw new Error ('Une ou plusieurs données obligatoire sont manquantes');
             
             // Instanciation d'un utilisateur
             const user = new UserModels(firstname, lastname, email, password, sexe, 'tuteur', date_naissance, 0);
@@ -92,13 +89,11 @@ export class UserControllers {
             }
 
             // Envoi de la réponse
-            sendResponse(res, 200, body)
+            sendResponse(res, 200, body);
         } catch (err) {
             // Création de la réponse d'erreur
-            const body = { error: true, message: err.message }
-
+            const body = { error: true, message: err.message };
             // Envoi de la réponse
-            if (err.message === 'Une ou plusieurs données obligatoire sont manquantes')sendResponse(res, 400, body);
             if (err.message === 'Un compte utilisant cette adresse mail est déjà enregistré')sendResponse(res, 409, body);
         }
     }
@@ -128,7 +123,6 @@ export class UserControllers {
      */
     static logout = async(req: Request, res: Response) => {
         try {
-
             // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
             const request: any = req;
             const user: UserInterfaces = request.user;
@@ -143,7 +137,7 @@ export class UserControllers {
                 message: "L'utilisateur a été déconnecté avec succès",
             }
             // Envoi de la réponse
-            sendResponse(res, 200, body)
+            sendResponse(res, 200, body);
         } catch (err) {
             console.log(err);
         }

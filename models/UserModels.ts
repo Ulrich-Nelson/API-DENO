@@ -2,7 +2,7 @@ import { db } from "../db/db.ts";
 import { comparePass, hash } from "../helpers/password.helpers.ts";
 import UserInterfaces from "../interfaces/UserInterfaces.ts";
 import { userRoleType, sexeType, subscriptionType } from "../types/roleTypes.ts";
-import { Bson } from "https://deno.land/x/mongo@v0.20.1/mod.ts";
+import { Bson } from "https://deno.land/x/mongo@v0.21.2/mod.ts";
 import { getAuthToken } from "../helpers/jwt.helpers.ts";
 export class UserModels implements UserInterfaces {
     
@@ -29,8 +29,6 @@ export class UserModels implements UserInterfaces {
     token: string;
     refreshToken: string;
 
-    // constructor(firstname: string, lastname: string, email: string, password: string, sexe: sexeType, role: userRoleType, dateNaissance: Date, subscription: subscriptionType, 
-    //     createdAt: Date = new Date(), updateAt: Date = new Date(), lastLogin: Date = new Date(), attempt: number = 0, token = '', refreshToken = '' ) {
     constructor(firstname: string, lastname: string, email: string, password: string, sexe: sexeType, role: userRoleType, dateNaissance: Date, subscription: subscriptionType, 
         createdAt: Date = new Date(), updateAt: Date = new Date(), lastLogin: Date = new Date(), attempt: number = 0, token = '', refreshToken = '' ) {
         this.userdb = db.collection < UserInterfaces > ("users");
