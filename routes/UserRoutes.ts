@@ -6,14 +6,14 @@ import { userMiddleware } from "../middelwares/UserMiddelwares.ts";
 const route: Application = opine();
 
 route.post('/login', UserControllers.login);
-route.post('/register', userMiddleware, UserControllers.register);
-route.post('/subscription', UserControllers.subscription);
-route.put('/user', authMiddleware, UserControllers.editUser);
-route.delete('/user/off', authMiddleware, UserControllers.logout);
-route.post('/user/child', [ userMiddleware, authMiddleware], UserControllers.createChild);
-route.get('/user/child', UserControllers.getAllChild);
-route.delete('/user/child', UserControllers.deleteChild);
-route.put('/user/cart', UserControllers.addCart);
-route.delete('/user', UserControllers.deleteUser);
+route.post('/register', [userMiddleware], UserControllers.register);
+route.post('/subscription', [authMiddleware], UserControllers.subscription);
+route.put('/user', [authMiddleware, userMiddleware], UserControllers.editUser);
+route.delete('/user/off', [authMiddleware], UserControllers.logout);
+route.post('/user/child', [ authMiddleware, userMiddleware], UserControllers.createChild);
+route.get('/user/child', [authMiddleware], UserControllers.getAllChild);
+route.delete('/user/child', [authMiddleware], UserControllers.deleteChild);
+route.put('/user/cart', [authMiddleware], UserControllers.addCart);
+route.delete('/user', [authMiddleware], UserControllers.deleteUser);
 
 export { route as UserRouter };
