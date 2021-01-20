@@ -54,6 +54,7 @@ const getJwtPayload = async(token: string): Promise < any | null > => {
         if (payload) {
             return payload;
         }
+        
     } catch (err) {
         return null
     }
