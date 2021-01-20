@@ -113,9 +113,8 @@ export class UserModels implements UserInterfaces {
            //enlever les données non désirables
            allChild.map((target) =>{
                Object.assign(target, {_id: target._id});
-               delete target.id_parent 
                delete target._id 
-                        
+               delete target.id_parent 
            })
            console.log(allChild)
         
@@ -127,10 +126,6 @@ export class UserModels implements UserInterfaces {
             console.log(err)
         }
     }
-
-     
-
-
 
 
     /**
