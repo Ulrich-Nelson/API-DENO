@@ -1,6 +1,6 @@
 import { Request, Response } from "https://deno.land/x/opine@1.0.2/src/types.ts";
 import { sendResponse } from "../helpers/response.helpers.ts";
-import { BufReader, readerFromStreamReader } from "https://deno.land/std@0.83.0/io/mod.ts";
+import { play } from "https://deno.land/x/audio@0.1.0/mod.ts";
 
 export class SongControllers {
 
@@ -40,7 +40,10 @@ export class SongControllers {
             // const file = await Deno.open(filename);
             // const bufReader = new BufReader(file);
             // file.close();
-            sendResponse(res, 200, {error: false, song: {}, data : Deno.readFileSync(filename)})
+
+            play(filename);
+
+            sendResponse(res, 200, {error: false, song: {}})
         } catch (err) {
             console.log(err);
         }
