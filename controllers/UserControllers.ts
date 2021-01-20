@@ -181,6 +181,27 @@ export class UserControllers {
      * @param res 
      */
     static getAllChild = async(req: Request, res: Response) => {
+        try {
+
+            //Récupération de l'utilisateur courant
+            const request: any = req;
+            const parent: UserInterfaces = request.user;
+            if(parent.role !== 'tuteur')throw new Error ('Vos droits d\'accès ne permettent pas d\'accéder à la ressource');
+            
+            //récupérer tous les  enfants du parent associé
+           const allchild = await UserModels.getAllchild(parent)
+
+           // Création de la réponse
+           const body = {
+            error: false, 
+            users: allchild }
+
+            // Envoi de la réponse
+           sendResponse(res, 200, body);
+        } catch (err) {
+            const body = { error: true, message: err.message }
+            if (err.message === 'Vos droits d\'accès ne permettent pas d\'accéder à la ressource')sendResponse(res, 403, body);
+        }
 
     }
 
