@@ -6,6 +6,8 @@ import { Bson } from "https://deno.land/x/mongo@v0.21.2/mod.ts";
 import { getAuthToken } from "../helpers/jwt.helpers.ts";
 
 
+
+
 export class UserModels implements UserInterfaces {
     
     private userdb: any;
@@ -187,6 +189,7 @@ export class UserModels implements UserInterfaces {
 
         return (user);
     }
+
     
     
     /**
