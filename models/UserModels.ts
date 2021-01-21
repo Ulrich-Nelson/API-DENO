@@ -80,6 +80,7 @@ export class UserModels implements UserInterfaces {
             attempt : 0,
             token: this.token,
             refreshToken: this.refreshToken,
+    
         }
         if(this.id_parent) {
             const nbChild  = await this.userdb.count({id_parent: this.id_parent});
@@ -102,6 +103,7 @@ export class UserModels implements UserInterfaces {
             console.log(err);
         }
     }
+    
 
     /**
      * récupération de tous les enfants d'un parent
@@ -116,7 +118,7 @@ export class UserModels implements UserInterfaces {
            allChild.map((target) =>{
                Object.assign(target, {_id: target._id});
                delete target._id 
-               delete target.id_parent 
+               delete target.id_parent
            })
            console.log(allChild)
         
