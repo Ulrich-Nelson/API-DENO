@@ -73,8 +73,8 @@ export class BillModels implements BillInterfaces {
         // On enlève les données inutiles
         bills.map((item) => {
             Object.assign(item, {id: item._id});
-            item._id = undefined;
-            item.user_id = undefined;
+            delete item._id;
+            delete item.user_id;
         });
 
         // Si la ou les facture existe bien on la return, sinon on return null
