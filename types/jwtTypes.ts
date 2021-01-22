@@ -1,4 +1,4 @@
-import { userRoleType } from "./roleTypes.ts";
+import { userRoleType } from "./userTypes.ts";
 
 export type jwtPayload = {
     iss: string,

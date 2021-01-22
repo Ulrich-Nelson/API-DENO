@@ -1,7 +1,7 @@
 import { db } from "../db/db.ts";
 import { comparePass, hash } from "../helpers/password.helpers.ts";
 import UserInterfaces from "../interfaces/UserInterfaces.ts";
-import { userRoleType, sexeType, subscriptionType } from "../types/roleTypes.ts";
+import { userRoleType, sexeType, subscriptionType, allChildType } from "../types/userTypes.ts";
 import { Bson } from "https://deno.land/x/mongo@v0.21.2/mod.ts";
 import { getAuthToken } from "../helpers/jwt.helpers.ts";
 
@@ -80,7 +80,6 @@ export class UserModels implements UserInterfaces {
             attempt : 0,
             token: this.token,
             refreshToken: this.refreshToken,
-    
         }
         if(this.id_parent) {
             const nbChild  = await this.userdb.count({id_parent: this.id_parent});
@@ -103,24 +102,28 @@ export class UserModels implements UserInterfaces {
             console.log(err);
         }
     }
-    
 
     /**
      * récupération de tous les enfants d'un parent
      * @param user UserInterface
      */
-    static async getAllchild(user: UserInterfaces): Promise <UserInterfaces[] | void>{
+    static async getAllchild(user: UserInterfaces): Promise <allChildType[] | void>{
         try {
 
-           const allChild = await this.userdb.find({id_parent: user._id}, {}).toArray()
+            const allChild = await this.userdb.find({id_parent: user._id}, {}).toArray()
             
            //enlever les données non désirables
-           allChild.map((target) =>{
-               Object.assign(target, {_id: target._id});
-               delete target._id 
-               delete target.id_parent
-           })
-           console.log(allChild)
+            allChild.map((target: allChildType) =>{
+                Object.assign(target, {_id: target._id});
+                delete target._id 
+                delete target.id_parent
+                delete target.email
+                delete target.password
+                delete target.refreshToken
+                delete target.token
+                delete target.lastLogin
+                delete target.attempt
+            })
         
         // retourner les données si elles existent
         if (allChild) return allChild;

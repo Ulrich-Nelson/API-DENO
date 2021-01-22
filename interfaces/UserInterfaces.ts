@@ -1,4 +1,4 @@
-import { userRoleType, sexeType, subscriptionType } from "../types/roleTypes.ts";
+import { userRoleType, sexeType, subscriptionType } from "../types/userTypes.ts";
 
 export default interface UserInterfaces {
 
