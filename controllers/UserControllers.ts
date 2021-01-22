@@ -271,6 +271,22 @@ export class UserControllers {
      */
     static deleteChild = async(req: Request, res: Response) => {
 
+        try {
+            // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
+            const request: any = req;
+            const user: UserInterfaces = request.user;
+            if(user.role !== 'tuteur')throw new Error ('Vos droits d\'accès ne permettent pas d\'accéder à la ressource');
+
+            // Récupération de toutes les données du body
+            const {id_child} = req.body;
+            console.log(id_child);
+            
+            
+        } catch (err) {
+            // Création de la réponse d'erreur
+            const body = { error: true, message: err.message }
+            if (err.message === "Vos droits d'accès ne permettent pas d'accéder à la ressource")sendResponse(res, 403, body);
+        }
     }
 
     /**
