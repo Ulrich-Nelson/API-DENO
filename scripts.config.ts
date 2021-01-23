@@ -6,7 +6,7 @@ const config: DenonConfig = {
       cmd: "main.ts",
       desc: "exécute le fichier main.ts avec la commande 'denon start' ",
       unstable: true,
-      allow: ["read", "net"]
+      allow: ["env","plugin", "write",  "read", "net"]
     },
   },
 };
