@@ -288,9 +288,16 @@ export class UserControllers {
             
             //retourner un message d'erreur si aucun utilisateur existe
             if(!isValidId)throw new Error ("Vous ne pouvez pas supprimer cet enfant");
+            
+            // vérifier que l'id_parent est identique à au tuteur qui fait la requête
+            const isMatch = (isValidId.id_parent === user._id)
+            console.log(isValidId.id_parent);
+            console.log(user._id);            
+            console.log(isMatch);
+            if(isMatch) throw new Error ("Vous n'êtes pas le propriétaire");
 
             // Supprimer l'enfant à partir de son identifiant
-            await UserModels.delete(id_child)  
+            // await UserModels.delete(id_child)  
              
             // Création de la réponse
             const body = {
@@ -306,7 +313,7 @@ export class UserControllers {
             const body = { error: true, message: err.message }
             if (err.message === "Vos droits d'accès ne permettent pas d'accéder à la ressource")sendResponse(res, 403, body);
             else if (err.message === "Vous ne pouvez pas supprimer cet enfant")sendResponse(res, 403, body);
-
+            else if (err.message === "Vous n'êtes pas le propriétaire")sendResponse(res, 403, body);
         }
     }
 
