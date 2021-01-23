@@ -280,21 +280,18 @@ export class UserControllers {
             // Récupération de l'indentifiant de l'enfant depuis le body
             const {id_child} = req.body;
 
-            //vérifier que l'identifiant passé soit valide
+            // vérifier la taille de l'identifiant
+            if(id_child.length !== 24 ) throw new Error ("Vous ne pouvez pas supprimer cet enfant");
+            
+            //si la taille est conforme, vérifier que l'utilisateur existe en BD
             const isValidId = await UserModels.getOneUser(id_child)
             
-            //retourner un message d'erreur si l'identifiant est incorrect
+            //retourner un message d'erreur si aucun utilisateur existe
             if(!isValidId)throw new Error ("Vous ne pouvez pas supprimer cet enfant");
-            console.log(isValidId.id_parent);
-            console.log(user._id);
-            
-            
-            // vérifier également la relation enfant-tuteur
-            // if(!Object.is(isValidId?.id_parent, user._id)) throw new Error ("cette utilisateur ne vous appartient pas");
-            
-            //si tout est OK on peut supprimer l'enfant          
+
+            // Supprimer l'enfant à partir de son identifiant
             await UserModels.delete(id_child)  
-                 
+             
             // Création de la réponse
             const body = {
                 error: false, 
@@ -309,7 +306,6 @@ export class UserControllers {
             const body = { error: true, message: err.message }
             if (err.message === "Vos droits d'accès ne permettent pas d'accéder à la ressource")sendResponse(res, 403, body);
             else if (err.message === "Vous ne pouvez pas supprimer cet enfant")sendResponse(res, 403, body);
-            else if (err.message === "cette utilisateur ne vous appartient pas")sendResponse(res, 403, body);
 
         }
     }

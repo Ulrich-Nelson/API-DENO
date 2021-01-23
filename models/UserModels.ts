@@ -108,7 +108,7 @@ export class UserModels implements UserInterfaces {
      * suppression d'un enfant appartement à un parent
      * @param user childInterface
      */
-    static async delete(user: allChildType): Promise <void> {
+    static async delete(user: UserInterfaces): Promise <void> {
         try {
             await this.userdb.deleteOne({_id: user._id });
         } catch (err) {
