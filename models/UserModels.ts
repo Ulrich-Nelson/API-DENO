@@ -83,9 +83,8 @@ export class UserModels implements UserInterfaces {
         }
         if(this.id_parent) {
             const nbChild  = await this.userdb.count({id_parent: this.id_parent});
-             if(nbChild === 4) throw new Error("Vous avez dépassé le cota de trois enfants");
-             console.log(nbChild)
-             Object.assign(toInsert, { id_parent: this.id_parent });
+            if(nbChild === 4) throw new Error("Vous avez dépassé le cota de trois enfants");
+            Object.assign(toInsert, { id_parent: this.id_parent });
         }
         this._id =  this.userdb.insertOne(toInsert);
     };
