@@ -46,7 +46,7 @@ export class UserControllers {
             sendResponse(res, 200, body)
         } catch (err) {
             // Création de la réponse d'erreur
-            const body = { error: true, message: err.message }
+            const body = { error: true, message: err.message };
             
             // Envoi de la réponse
             if (err.message === 'Email/password manquants')sendResponse(res, 400, body);
@@ -65,9 +65,6 @@ export class UserControllers {
         try {
             // Récupération de toutes les données du body
             const {firstname, lastname, email, password, date_naissance, sexe} = req.body;
-
-            // Vérification de si toutes les données existe
-            if (!firstname || !lastname || !email || !password || !date_naissance || !sexe) throw new Error ('Une ou plusieurs données obligatoire sont manquantes');
             
             // Instanciation d'un utilisateur
             const user = new UserModels(firstname, lastname, email, password, sexe, 'tuteur', date_naissance, 0);
@@ -96,13 +93,11 @@ export class UserControllers {
             }
 
             // Envoi de la réponse
-            sendResponse(res, 200, body)
+            sendResponse(res, 200, body);
         } catch (err) {
             // Création de la réponse d'erreur
-            const body = { error: true, message: err.message }
-
+            const body = { error: true, message: err.message };
             // Envoi de la réponse
-            if (err.message === 'Une ou plusieurs données obligatoire sont manquantes')sendResponse(res, 400, body);
             if (err.message === 'Un compte utilisant cette adresse mail est déjà enregistré')sendResponse(res, 409, body);
         }
     }
@@ -122,7 +117,34 @@ export class UserControllers {
      * @param res 
      */
     static editUser = async(req: Request, res: Response) => {
+        try {
+            //Récupération de toutes les données du body
+            const {firstname, lastname, date_naissance, sexe} = req.body;
 
+            // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans la requête
+            const request: any = req;
+            const user: UserInterfaces = request.user;
+
+            // Modifier les valeurs les propriétés de l'utilisateur courant
+            if (firstname) user.firstname = firstname;
+            if (lastname) user.lastname = lastname;
+            if (date_naissance) user.dateNaissance = date_naissance;
+            if (sexe) user.sexe = sexe;
+
+            //Mettre à jour ses différentes valeurs
+            await UserModels.update(user);
+
+            // Création de la réponse
+            const body = {
+                error: false, 
+                message: "Vos données ont été mises à jour",
+            }
+            // Envoi de la réponse
+            sendResponse(res, 200, body)
+        } catch (err) {
+            const body = { error: true, message: err.message }
+            if (err.message === 'Une ou plusieurs données obligatoire sont manquantes')sendResponse(res, 409, body);
+        }
     }
 
     /**
@@ -132,7 +154,6 @@ export class UserControllers {
      */
     static logout = async(req: Request, res: Response) => {
         try {
-
             // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
             const request: any = req;
             const user: UserInterfaces = request.user;
@@ -148,7 +169,7 @@ export class UserControllers {
                 message: "L'utilisateur a été déconnecté avec succès",
             }
             // Envoi de la réponse
-            sendResponse(res, 200, body)
+            sendResponse(res, 200, body);
         } catch (err) {
             console.log(err);
         }
@@ -160,6 +181,27 @@ export class UserControllers {
      * @param res 
      */
     static getAllChild = async(req: Request, res: Response) => {
+        try {
+
+            //Récupération de l'utilisateur courant
+            const request: any = req;
+            const parent: UserInterfaces = request.user;
+            if(parent.role !== 'tuteur')throw new Error ('Vos droits d\'accès ne permettent pas d\'accéder à la ressource');
+            
+            //récupérer tous les  enfants du parent associé
+           const allchild = await UserModels.getAllchild(parent)
+
+           // Création de la réponse
+           const body = {
+            error: false, 
+            users: allchild }
+
+            // Envoi de la réponse
+           sendResponse(res, 200, body);
+        } catch (err) {
+            const body = { error: true, message: err.message }
+            if (err.message === 'Vos droits d\'accès ne permettent pas d\'accéder à la ressource')sendResponse(res, 403, body);
+        }
 
     }
 
@@ -215,6 +257,7 @@ export class UserControllers {
 
             // Envoi de la réponse
             if (err.message === 'Une ou plusieurs données obligatoire sont manquantes')sendResponse(res, 400, body);
+            if (err.message === "Vous avez dépassé le cota de trois enfants")sendResponse(res, 409, body);
             if (err.message === 'Un compte utilisant cette adresse mail est déjà enregistré')sendResponse(res, 409, body);
             if (err.message === "Vos droits d'accès ne permettent pas d'accéder à la ressource")sendResponse(res, 403, body);
         }

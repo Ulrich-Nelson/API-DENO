@@ -5,4 +5,5 @@
     "deno.import_intellisense_origins": {
       "https://deno.land": true,
     },
+    "compile-hero.disable-compile-files-on-did-save-code": true,
 }

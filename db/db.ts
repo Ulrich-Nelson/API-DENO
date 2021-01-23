@@ -1,5 +1,5 @@
 import { config } from '../config/config.ts';
-import { MongoClient } from "https://deno.land/x/mongo@v0.21.0/mod.ts";
+import { MongoClient } from "https://deno.land/x/mongo@v0.21.2/mod.ts";
 
 // Connection à la base de données
 const client = new MongoClient();

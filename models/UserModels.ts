@@ -1,9 +1,11 @@
 import { db } from "../db/db.ts";
 import { comparePass, hash } from "../helpers/password.helpers.ts";
 import UserInterfaces from "../interfaces/UserInterfaces.ts";
-import { userRoleType, sexeType, subscriptionType } from "../types/roleTypes.ts";
-import { Bson } from "https://deno.land/x/mongo@v0.20.1/mod.ts";
+import { userRoleType, sexeType, subscriptionType, allChildType } from "../types/userTypes.ts";
+import { Bson } from "https://deno.land/x/mongo@v0.21.2/mod.ts";
 import { getAuthToken } from "../helpers/jwt.helpers.ts";
+
+
 
 
 export class UserModels implements UserInterfaces {
@@ -31,8 +33,6 @@ export class UserModels implements UserInterfaces {
     token: string;
     refreshToken: string;
 
-    // constructor(firstname: string, lastname: string, email: string, password: string, sexe: sexeType, role: userRoleType, dateNaissance: Date, subscription: subscriptionType, 
-    //     createdAt: Date = new Date(), updateAt: Date = new Date(), lastLogin: Date = new Date(), attempt: number = 0, token = '', refreshToken = '' ) {
     constructor(firstname: string, lastname: string, email: string, password: string, sexe: sexeType, role: userRoleType, dateNaissance: Date, subscription: subscriptionType, id_parent?: { $oid: string } |string,
         createdAt: Date = new Date(), updateAt: Date = new Date(), lastLogin: Date = new Date(), attempt: number = 0, token = '', refreshToken = '' ) {
         this.userdb = db.collection < UserInterfaces > ("users");
@@ -83,7 +83,7 @@ export class UserModels implements UserInterfaces {
         }
         if(this.id_parent) {
             const nbChild  = await this.userdb.count({id_parent: this.id_parent});
-            if(nbChild === 4) throw new Error("Vous avez dépassé le cota de trois enfants");
+            if(nbChild === 3) throw new Error("Vous avez dépassé le cota de trois enfants");
             Object.assign(toInsert, { id_parent: this.id_parent });
         }
         this._id =  this.userdb.insertOne(toInsert);
@@ -102,6 +102,38 @@ export class UserModels implements UserInterfaces {
             console.log(err);
         }
     }
+
+    /**
+     * récupération de tous les enfants d'un parent
+     * @param user UserInterface
+     */
+    static async getAllchild(user: UserInterfaces): Promise <allChildType[] | void>{
+        try {
+
+            const allChild = await this.userdb.find({id_parent: user._id}, {}).toArray()
+            
+           //enlever les données non désirables
+            allChild.map((target: allChildType) =>{
+                Object.assign(target, {_id: target._id});
+                delete target._id 
+                delete target.id_parent
+                delete target.email
+                delete target.password
+                delete target.refreshToken
+                delete target.token
+                delete target.lastLogin
+                delete target.attempt
+            })
+        
+        // retourner les données si elles existent
+        if (allChild) return allChild;
+        else return [];
+
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
 
     /**
      * Génération du token et modification en base de donnée
@@ -162,6 +194,7 @@ export class UserModels implements UserInterfaces {
 
         return (user);
     }
+
     
     
     /**
@@ -178,6 +211,5 @@ export class UserModels implements UserInterfaces {
         if (user) return user;
         else return null;
     }
-
     
 }
