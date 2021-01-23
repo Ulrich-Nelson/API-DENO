@@ -294,7 +294,7 @@ export class UserControllers {
             console.log(isValidId.id_parent);
             console.log(user._id);            
             console.log(isMatch);
-            if(isMatch) throw new Error ("Vous n'êtes pas le propriétaire");
+            if(isMatch) throw new Error ("Vous ne pouvez pas supprimer cet enfant");
 
             // Supprimer l'enfant à partir de son identifiant
             // await UserModels.delete(id_child)  
