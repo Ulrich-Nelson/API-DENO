@@ -277,15 +277,40 @@ export class UserControllers {
             const user: UserInterfaces = request.user;
             if(user.role !== 'tuteur')throw new Error ('Vos droits d\'accès ne permettent pas d\'accéder à la ressource');
 
-            // Récupération de toutes les données du body
+            // Récupération de l'indentifiant de l'enfant depuis le body
             const {id_child} = req.body;
-            console.log(id_child);
+
+            //vérifier que l'identifiant passé soit valide
+            const isValidId = await UserModels.getOneUser(id_child)
             
+            //retourner un message d'erreur si l'identifiant est incorrect
+            if(!isValidId)throw new Error ("Vous ne pouvez pas supprimer cet enfant");
+            console.log(isValidId.id_parent);
+            console.log(user._id);
+            
+            
+            // vérifier également la relation enfant-tuteur
+            // if(!Object.is(isValidId?.id_parent, user._id)) throw new Error ("cette utilisateur ne vous appartient pas");
+            
+            //si tout est OK on peut supprimer l'enfant          
+            await UserModels.delete(id_child)  
+                 
+            // Création de la réponse
+            const body = {
+                error: false, 
+                message: "L'utilisateur a été supprimée avec succès",
+            }
+
+            // Envoi de la réponse
+            sendResponse(res, 200, body)
             
         } catch (err) {
             // Création de la réponse d'erreur
             const body = { error: true, message: err.message }
             if (err.message === "Vos droits d'accès ne permettent pas d'accéder à la ressource")sendResponse(res, 403, body);
+            else if (err.message === "Vous ne pouvez pas supprimer cet enfant")sendResponse(res, 403, body);
+            else if (err.message === "cette utilisateur ne vous appartient pas")sendResponse(res, 403, body);
+
         }
     }
 
