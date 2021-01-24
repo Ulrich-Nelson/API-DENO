@@ -290,15 +290,12 @@ export class UserControllers {
             if(!isValidId)throw new Error ("Vous ne pouvez pas supprimer cet enfant");
             
             // vérifier que l'id_parent est identique à au tuteur qui fait la requête
-            const isMatch = (isValidId.id_parent === user._id)
-            console.log(isValidId.id_parent);
-            console.log(user._id);            
-            console.log(isMatch);
+            const isMatch = (isValidId.id_parent?.toString() !== user._id?.toString())
             if(isMatch) throw new Error ("Vous ne pouvez pas supprimer cet enfant");
 
             // Supprimer l'enfant à partir de son identifiant
             // await UserModels.delete(id_child)  
-             
+            
             // Création de la réponse
             const body = {
                 error: false, 
