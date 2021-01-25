@@ -319,6 +319,12 @@ export class UserControllers {
      * @param res 
      */
     static deleteUser = async(req: Request, res: Response) => {
+        try {
+            
+        } catch (err) {
+            console.log(err);
+            
+        }
 
     }
 
