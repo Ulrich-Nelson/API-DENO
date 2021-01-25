@@ -293,7 +293,7 @@ export class UserControllers {
             const isMatch = (isValidId.id_parent?.toString() !== user._id?.toString())
             if(isMatch) throw new Error ("Vous ne pouvez pas supprimer cet enfant");
 
-            // Supprimer l'enfant à partir de son identifiant
+            // Supprimer l'enfant à partir de son identifiant            
             await UserModels.delete(id_child)  
             
             // Création de la réponse
@@ -309,8 +309,7 @@ export class UserControllers {
             // Création de la réponse d'erreur
             const body = { error: true, message: err.message }
             if (err.message === "Vos droits d'accès ne permettent pas d'accéder à la ressource")sendResponse(res, 403, body);
-            else if (err.message === "Vous ne pouvez pas supprimer cet enfant")sendResponse(res, 403, body);
-            else if (err.message === "Vous n'êtes pas le propriétaire")sendResponse(res, 403, body);
+            if (err.message === "Vous ne pouvez pas supprimer cet enfant")sendResponse(res, 403, body);
         }
     }
 
