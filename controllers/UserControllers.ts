@@ -271,6 +271,46 @@ export class UserControllers {
      */
     static deleteChild = async(req: Request, res: Response) => {
 
+        try {
+            // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
+            const request: any = req;
+            const user: UserInterfaces = request.user;
+            if(user.role !== 'tuteur')throw new Error ('Vos droits d\'accès ne permettent pas d\'accéder à la ressource');
+
+            // Récupération de l'indentifiant de l'enfant depuis le body
+            const {id_child} = req.body;
+
+            // vérifier la taille de l'identifiant
+            if(id_child.length !== 24 ) throw new Error ("Vous ne pouvez pas supprimer cet enfant");
+            
+            //si la taille est conforme, vérifier que l'utilisateur existe en BD
+            const isValidId = await UserModels.getOneUser(id_child)
+            
+            //retourner un message d'erreur si aucun utilisateur existe
+            if(!isValidId)throw new Error ("Vous ne pouvez pas supprimer cet enfant");
+            
+            // vérifier que l'id_parent est identique à au tuteur qui fait la requête
+            const isMatch = (isValidId.id_parent?.toString() !== user._id?.toString())
+            if(isMatch) throw new Error ("Vous ne pouvez pas supprimer cet enfant");
+
+            // Supprimer l'enfant à partir de son identifiant            
+            await UserModels.delete(id_child)  
+            
+            // Création de la réponse
+            const body = {
+                error: false, 
+                message: "L'utilisateur a été supprimée avec succès",
+            }
+
+            // Envoi de la réponse
+            sendResponse(res, 200, body)
+            
+        } catch (err) {
+            // Création de la réponse d'erreur
+            const body = { error: true, message: err.message }
+            if (err.message === "Vos droits d'accès ne permettent pas d'accéder à la ressource")sendResponse(res, 403, body);
+            if (err.message === "Vous ne pouvez pas supprimer cet enfant")sendResponse(res, 403, body);
+        }
     }
 
     /**
