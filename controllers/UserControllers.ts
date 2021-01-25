@@ -294,7 +294,7 @@ export class UserControllers {
             if(isMatch) throw new Error ("Vous ne pouvez pas supprimer cet enfant");
 
             // Supprimer l'enfant à partir de son identifiant
-            // await UserModels.delete(id_child)  
+            await UserModels.delete(id_child)  
             
             // Création de la réponse
             const body = {
