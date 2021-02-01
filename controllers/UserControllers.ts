@@ -320,12 +320,31 @@ export class UserControllers {
      */
     static deleteUser = async(req: Request, res: Response) => {
         try {
-            
-        } catch (err) {
-            console.log(err);
-            
-        }
+            // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
+            const request: any = req;
+            const user: UserInterfaces = request.user;
+            if(user.role !== 'tuteur')throw new Error ('Votre token \'est pas correct');
 
+            // désactiver(supprimer) le compte de l'utilisateur
+            user.isActive = false;
+            await UserModels.update(user);
+
+            // désactiver(supprimer) le compte des enfants
+           await UserModels.updateAllChild(user)
+
+             // Envoi de la réponse
+            const body = {
+                error: false, 
+                message: "Votre compte et le compte de vos enfants ont été supprimés avec succès",
+            }
+
+            // Envoi de la réponse
+           sendResponse(res, 200, body);
+
+        } catch (err) {
+            const body = { error: true, message: err.message }
+            if (err.message === 'Votre token n\'est pas correct')sendResponse(res, 401, body);
+        }
     }
 
     /**

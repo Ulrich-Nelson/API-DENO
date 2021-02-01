@@ -2,6 +2,7 @@ export type userRoleType = 'administrateur' | 'tuteur' | 'enfant';
 export type sexeType = 'Homme' | 'Femme';
 export type subscriptionType = 0 | 1;
 
+
 export type allChildType = {
     
     _id?: { $oid: string } | string | null,
@@ -21,7 +22,7 @@ export type allChildType = {
 
     token?: string,
     refreshToken?: string,
-
+    isActive?: boolean;
     lastLogin?: Date,
     attempt?: number
 }

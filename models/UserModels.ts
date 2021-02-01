@@ -30,11 +30,15 @@ export class UserModels implements UserInterfaces {
     attempt: number;
     lastLogin: Date;
 
+    //supprimer le compte de l'utilisateur
+    isActive : boolean;
+
     token: string;
     refreshToken: string;
 
     constructor(firstname: string, lastname: string, email: string, password: string, sexe: sexeType, role: userRoleType, dateNaissance: Date, subscription: subscriptionType, id_parent?: { $oid: string } |string,
-        createdAt: Date = new Date(), updateAt: Date = new Date(), lastLogin: Date = new Date(), attempt: number = 0, token = '', refreshToken = '' ) {
+        createdAt: Date = new Date(), updateAt: Date = new Date(), lastLogin: Date = new Date(), attempt: number = 0,
+        isActive = false, token = '', refreshToken = '' ) {
         this.userdb = db.collection < UserInterfaces > ("users");
         this.firstname = firstname;
         this.lastname =  lastname;
@@ -49,6 +53,7 @@ export class UserModels implements UserInterfaces {
         this.updateAt = updateAt;
         this.lastLogin = lastLogin;
         this.attempt = attempt;
+        this.isActive = isActive;
         this.token = token;
         this.refreshToken = refreshToken;
         if(this.role === 'enfant') this.id_parent = id_parent
@@ -80,6 +85,7 @@ export class UserModels implements UserInterfaces {
             attempt : 0,
             token: this.token,
             refreshToken: this.refreshToken,
+            isActive: true,
         }
         if(this.id_parent) {
             const nbChild  = await this.userdb.count({id_parent: this.id_parent});
@@ -106,11 +112,24 @@ export class UserModels implements UserInterfaces {
 
      /**
      * suppression d'un enfant appartement à un parent
-     * @param user childInterface
+     * @param user userInterface
      */
     static async delete(user: UserInterfaces): Promise <void> {
         try {
             await this.userdb.deleteOne({_id: user._id });
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+
+    /**
+     * désactiver(supprimer) le compte de tout les enfants d'un tuteur
+     * @param user userIinterface
+     */
+    static async updateAllChild(user: UserInterfaces): Promise <void> {
+        try {
+            await this.userdb.updateMany({id_parent: user._id},{ $set:{ isActive: false}});
         } catch (err) {
             console.log(err);
         }
@@ -137,6 +156,7 @@ export class UserModels implements UserInterfaces {
                 delete target.token
                 delete target.lastLogin
                 delete target.attempt
+                delete target.isActive
             })
         
         // retourner les données si elles existent
@@ -147,6 +167,9 @@ export class UserModels implements UserInterfaces {
             console.log(err)
         }
     }
+
+
+
 
 
     /**
@@ -179,6 +202,9 @@ export class UserModels implements UserInterfaces {
 
         // Si aucun utilisateur n'a cet email
         if (!user) throw new Error('Email/password incorrect');
+
+        // vérifier si le compte de l'utilisateur a été supprimé(désactivé)
+        if(user.isActive === false)throw new Error('Email/password incorrect');
 
         // Si l'utilisateur à respecter les deux minutes d'attente on remet sont nombres d'essai à 0
         if(user.attempt >= 5  && ((new Date().getTime() - user.lastLogin.getTime()) / 1000 / 60) >= 2) {
@@ -225,5 +251,8 @@ export class UserModels implements UserInterfaces {
         if (user) return user;
         else return null;
     }
+
+
+
     
 }
