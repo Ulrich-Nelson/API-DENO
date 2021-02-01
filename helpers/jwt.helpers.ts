@@ -10,7 +10,8 @@ const {
 } = config;
 
 const header: any = {
-    alg: "HS256",
+    // alg: "HS256",
+    alg: "none",
     typ: "JWT",
 };
 
@@ -20,14 +21,10 @@ const header: any = {
  */
 const getAuthToken = async (user: any) => {
     const payload: any = {
-        iss: "API-DENO",
         id: user._id,
-        email: user.email,
-        roles: user.role,
         exp: getNumericDate(new Date().getTime() + parseInt(JWT_ACCESS_TOKEN_EXP)),
     };
-
-    return await create(header, payload, JWT_TOKEN_SECRET);
+    return (await create(header, payload, JWT_TOKEN_SECRET)).split('.')[1];
 };
 
 /**
@@ -36,7 +33,6 @@ const getAuthToken = async (user: any) => {
  */
 const getRefreshToken = async(user: any) => {
     const payload: any = {
-        iss: "API-DENO",
         id: user._id,
         exp: getNumericDate(new Date().getTime() + parseInt(JWT_REFRESH_TOKEN_EXP)),
     };

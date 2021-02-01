@@ -8,6 +8,8 @@ export default class PasswordException extends Error {
      * @param password 
      */
     static isValidPassword(password: string): boolean {
-        return password.length >= 6;
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (password.length < 7 || password.length > 20) return false;
+        else return regex.test(password)
     }
 }

@@ -11,7 +11,7 @@ export default interface UserInterfaces {
     password:string;
     sexe: sexeType;
     role: userRoleType;
-    dateNaissance: Date;
+    dateNaissance: string;
     subscription: subscriptionType;
 
     createdAt: Date;
