@@ -324,14 +324,14 @@ export class UserControllers {
             // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
             const request: any = req;
             const user: UserInterfaces = request.user;
-            if(user.role !== 'tuteur')throw new Error ('Votre token \'est pas correct');
+            if(user.role !== 'Tuteur')throw new Error ('Votre token \'est pas correct');
 
             // désactiver(supprimer) le compte de l'utilisateur
             user.isActive = false;
             await UserModels.update(user);
 
             // désactiver(supprimer) le compte des enfants
-           await UserModels.updateAllChild(user)
+            await UserModels.updateAllChild(user)
 
              // Envoi de la réponse
             const body = {
@@ -340,7 +340,7 @@ export class UserControllers {
             }
 
             // Envoi de la réponse
-           sendResponse(res, 200, body);
+            sendResponse(res, 200, body);
 
         } catch (err) {
             const body = { error: true, message: err.message }

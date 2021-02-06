@@ -95,8 +95,6 @@ export class UserModels implements UserInterfaces {
         this._id =  this.userdb.insertOne(toInsert);
     };
 
-
-
     /**
      * Modification d'un utilisateur
      * @param user UserInterface
@@ -109,8 +107,7 @@ export class UserModels implements UserInterfaces {
         }
     }
 
-
-     /**
+    /**
      * suppression d'un enfant appartement à un parent
      * @param user userInterface
      */
@@ -121,7 +118,6 @@ export class UserModels implements UserInterfaces {
             console.log(err);
         }
     }
-
 
     /**
      * désactiver(supprimer) le compte de tout les enfants d'un tuteur
@@ -168,10 +164,6 @@ export class UserModels implements UserInterfaces {
         }
     }
 
-
-
-
-
     /**
      * Génération du token et modification en base de donnée
      * @param user UserInterface
@@ -204,7 +196,7 @@ export class UserModels implements UserInterfaces {
         if (!user) throw new Error('Email/password incorrect');
 
         // vérifier si le compte de l'utilisateur a été supprimé(désactivé)
-        if(user.isActive === false)throw new Error('Email/password incorrect');
+        if(user.isActive === false) throw new Error('Email/password incorrect');
 
         // Si l'utilisateur à respecter les deux minutes d'attente on remet sont nombres d'essai à 0
         if(user.attempt >= 5  && ((new Date().getTime() - user.lastLogin.getTime()) / 1000 / 60) >= 2) {
@@ -234,8 +226,6 @@ export class UserModels implements UserInterfaces {
 
         return (user);
     }
-
-    
     
     /**
      * Récupération d'un utilisateur par son id et optionnelement son token pour s'assurer que c'est un user connecté.
@@ -252,7 +242,4 @@ export class UserModels implements UserInterfaces {
         else return null;
     }
 
-
-
-    
 }
