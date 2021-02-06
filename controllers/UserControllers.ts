@@ -67,7 +67,7 @@ export class UserControllers {
             const {firstname, lastname, email, password, date_naissance, sexe} = req.body;
             
             // Instanciation d'un utilisateur
-            const user = new UserModels(firstname, lastname, email, password, sexe, 'tuteur', date_naissance, 0);
+            const user = new UserModels(firstname, lastname, email, password, sexe, 'Tuteur', date_naissance, 0);
             
             // Insertion de l'utilisateur
             await user.insert();
@@ -93,7 +93,7 @@ export class UserControllers {
             }
 
             // Envoi de la réponse
-            sendResponse(res, 200, body);
+            sendResponse(res, 201, body);
         } catch (err) {
             // Création de la réponse d'erreur
             const body = { error: true, message: err.message };
@@ -186,18 +186,19 @@ export class UserControllers {
             //Récupération de l'utilisateur courant
             const request: any = req;
             const parent: UserInterfaces = request.user;
-            if(parent.role !== 'tuteur')throw new Error ('Vos droits d\'accès ne permettent pas d\'accéder à la ressource');
+            if(parent.role !== 'Tuteur')throw new Error ('Vos droits d\'accès ne permettent pas d\'accéder à la ressource');
             
             //récupérer tous les  enfants du parent associé
-           const allchild = await UserModels.getAllchild(parent)
+            const allchild = await UserModels.getAllchild(parent)
 
            // Création de la réponse
-           const body = {
-            error: false, 
-            users: allchild }
+            const body = {
+                error: false, 
+                users: allchild 
+            }
 
             // Envoi de la réponse
-           sendResponse(res, 200, body);
+            sendResponse(res, 200, body);
         } catch (err) {
             const body = { error: true, message: err.message }
             if (err.message === 'Vos droits d\'accès ne permettent pas d\'accéder à la ressource')sendResponse(res, 403, body);
@@ -216,7 +217,7 @@ export class UserControllers {
             // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
             const request: any = req;
             const parent: UserInterfaces = request.user;
-            if(parent.role !== 'tuteur')throw new Error ('Vos droits d\'accès ne permettent pas d\'accéder à la ressource');
+            if(parent.role !== 'Tuteur')throw new Error ('Vos droits d\'accès ne permettent pas d\'accéder à la ressource');
             // Récupération de toutes les données du body
             const {firstname, lastname, email, password, date_naissance, sexe} = req.body;
 
@@ -224,7 +225,7 @@ export class UserControllers {
             if (!firstname || !lastname || !email || !password || !date_naissance || !sexe) throw new Error ('Une ou plusieurs données obligatoire sont manquantes');
             
             // Instanciation d'un utilisateur (enfant)
-            const user = new UserModels(firstname, lastname, email, password, sexe, 'enfant', date_naissance, 0, <string> parent._id);
+            const user = new UserModels(firstname, lastname, email, password, sexe, 'Enfant', date_naissance, 0, <string> parent._id);
 
             // Insertion de l'utilisateur
             await user.insert();
@@ -250,7 +251,7 @@ export class UserControllers {
             }
 
             // Envoi de la réponse
-            sendResponse(res, 200, body)
+            sendResponse(res, 201, body)
         } catch (err) {
             // Création de la réponse d'erreur
             const body = { error: true, message: err.message }
@@ -275,7 +276,7 @@ export class UserControllers {
             // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
             const request: any = req;
             const user: UserInterfaces = request.user;
-            if(user.role !== 'tuteur')throw new Error ('Vos droits d\'accès ne permettent pas d\'accéder à la ressource');
+            if(user.role !== 'Tuteur')throw new Error ('Vos droits d\'accès ne permettent pas d\'accéder à la ressource');
 
             // Récupération de l'indentifiant de l'enfant depuis le body
             const {id_child} = req.body;
@@ -284,17 +285,17 @@ export class UserControllers {
             if(id_child.length !== 24 ) throw new Error ("Vous ne pouvez pas supprimer cet enfant");
             
             //si la taille est conforme, vérifier que l'utilisateur existe en BD
-            const isValidId = await UserModels.getOneUser(id_child)
+            const child = await UserModels.getOneUser(id_child)
             
             //retourner un message d'erreur si aucun utilisateur existe
-            if(!isValidId)throw new Error ("Vous ne pouvez pas supprimer cet enfant");
+            if(!child)throw new Error ("Vous ne pouvez pas supprimer cet enfant");
             
             // vérifier que l'id_parent est identique à au tuteur qui fait la requête
-            const isMatch = (isValidId.id_parent?.toString() !== user._id?.toString())
+            const isMatch = (child.id_parent?.toString() !== user._id?.toString())
             if(isMatch) throw new Error ("Vous ne pouvez pas supprimer cet enfant");
 
             // Supprimer l'enfant à partir de son identifiant            
-            await UserModels.delete(id_child)  
+            await UserModels.delete(child);
             
             // Création de la réponse
             const body = {

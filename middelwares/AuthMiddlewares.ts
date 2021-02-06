@@ -14,7 +14,7 @@ middleware.use(async (req: Request, res: Response, next: NextFunction) => {
         const token = req.headers.get('Authorization')?.replace('Bearer ', '');
 
         // Récupération du payload si le token existe
-        const payload: jwtPayload = (token) ? await getJwtPayload(token) : null;
+        const payload: jwtPayload = (token) ? await getJwtPayload('eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.' + token + '.') : null;
         if (!payload) throw new Error("Votre token n'est pas correct");
 
         // Récupération de l'utilisateur pour le mettre dans le req et y avoir dans les routes après

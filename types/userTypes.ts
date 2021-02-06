@@ -1,4 +1,4 @@
-export type userRoleType = 'administrateur' | 'tuteur' | 'enfant';
+export type userRoleType = 'Admin' | 'Tuteur' | 'Enfant';
 export type sexeType = 'Homme' | 'Femme';
 export type subscriptionType = 0 | 1;
 
@@ -14,7 +14,7 @@ export type allChildType = {
     password?:string,
     sexe: sexeType,
     role: userRoleType,
-    dateNaissance: Date,
+    dateNaissance: string,
     subscription: subscriptionType,
 
     createdAt: Date,
