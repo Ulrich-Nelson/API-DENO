@@ -22,4 +22,6 @@ export default interface UserInterfaces {
 
     lastLogin: Date;
     attempt: number;
+    // supprimer le compte d'un utilisateur
+    isActive: boolean;
 }

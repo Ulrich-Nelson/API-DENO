@@ -11,4 +11,5 @@ const config: DenonConfig = {
   },
 };
 
+
 export default config;
