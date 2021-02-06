@@ -60,7 +60,7 @@ export class BillControllers {
             const request: any = req;
             const user: UserInterfaces = request.user;
 
-            if(user.role !== 'tuteur') throw new Error("Vos droits d'accès ne permettent pas d'accéder à la ressource")
+            if(user.role !== 'Tuteur') throw new Error("Vos droits d'accès ne permettent pas d'accéder à la ressource")
 
             //Récupération de toutes les factures de l'utilisateur
             const bills = await BillModels.getAllBill(<string> user._id);

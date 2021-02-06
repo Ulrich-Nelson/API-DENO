@@ -21,7 +21,7 @@ export class UserModels implements UserInterfaces {
     password:string;
     sexe: sexeType;
     role: userRoleType;
-    dateNaissance: Date;
+    dateNaissance: string;
     subscription: subscriptionType;
 
     createdAt: Date;
@@ -33,7 +33,7 @@ export class UserModels implements UserInterfaces {
     token: string;
     refreshToken: string;
 
-    constructor(firstname: string, lastname: string, email: string, password: string, sexe: sexeType, role: userRoleType, dateNaissance: Date, subscription: subscriptionType, id_parent?: { $oid: string } |string,
+    constructor(firstname: string, lastname: string, email: string, password: string, sexe: sexeType, role: userRoleType, dateNaissance: string, subscription: subscriptionType, id_parent?: { $oid: string } |string,
         createdAt: Date = new Date(), updateAt: Date = new Date(), lastLogin: Date = new Date(), attempt: number = 0, token = '', refreshToken = '' ) {
         this.userdb = db.collection < UserInterfaces > ("users");
         this.firstname = firstname;
@@ -43,7 +43,7 @@ export class UserModels implements UserInterfaces {
         this.sexe = sexe;
         
         this.role = role;
-        this.dateNaissance = new Date (dateNaissance);
+        this.dateNaissance = dateNaissance;
         this.subscription = subscription;
         this.createdAt = createdAt; 
         this.updateAt = updateAt;
@@ -51,7 +51,7 @@ export class UserModels implements UserInterfaces {
         this.attempt = attempt;
         this.token = token;
         this.refreshToken = refreshToken;
-        if(this.role === 'enfant') this.id_parent = id_parent
+        if(this.role === 'Enfant') this.id_parent = id_parent
     }
 
     get id(): null | string | {$oid: string} | undefined {
