@@ -13,7 +13,39 @@ https://github.com/Ulrich-Nelson/API-DENO
 You need git to clone the repository. You can get git from
 [http://git-scm.com/](http://git-scm.com/).
 
-A number of node.js tools is necessary to initialize and test the project. You must have node.js and its package manager (npm) installed. You can get them from  [http://nodejs.org/](http://nodejs.org/). The tools/modules used in this project are listed in package.json and include express, mongodb and mongoose.
+Before you start, check it or install Deno on your machine.
+Deno est fourni comme un exécutable unique sans dépendances. Vous pouvez l'installer à l'aide des programmes d'installation ci-dessous ou télécharger un binaire de version à partir de la page des versions .
+
+#### Shell (Mac, Linux):
+
+```
+curl -fsSL https://deno.land/x/install/install.sh | sh
+```
+
+#### PowerShell (Windows):
+
+```
+iwr https://deno.land/x/install/install.ps1 -useb | iex
+```
+
+#### Homebrew (Mac):
+
+```
+brew install deno
+```
+
+#### Chocolatey (Windows):
+
+```
+choco install deno
+```
+
+
+#### Scoop (Windows):
+
+```
+scoop install deno
+```
 
 #### MongoDB
 The project uses MongoDB as a database. If you are on Mac and using Homebrew package manager the installation is as simple as `brew install mongodb`.
