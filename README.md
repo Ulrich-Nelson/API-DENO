@@ -60,14 +60,10 @@ First we need to create the `db` directory where the database files will live in
 
 The project is preconfigured with a simple development web server. The simplest way to start this server is:
 
-    npm start
+    deno start
 
-### API documentation
 
-    /api-docs
-
-The command will generate a /doc folder that will contain an index.html file. Open it in any browser. The file contains information about API routes.
 
 ### Project Structure
 
-*Under Construction*
+*For more details on the structure of the project, do not hesitate to consult the wiki*
