@@ -16,6 +16,10 @@ You need git to clone the repository. You can get git from
 Before you start, check it or install Deno on your machine.
 Deno est fourni comme un exécutable unique sans dépendances. Vous pouvez l'installer à l'aide des programmes d'installation ci-dessous ou télécharger un binaire de version à partir de la page des versions .
 
+```
+https://deno.land/
+```
+
 #### Shell (Mac, Linux):
 
 ```
@@ -50,8 +54,6 @@ scoop install deno
 #### MongoDB
 The project uses MongoDB as a database. If you are on Mac and using Homebrew package manager the installation is as simple as `brew install mongodb`.
 
-#### Apidoc
-To install run `npm install`.
 
 ### Start the MongoDB server
 First we need to create the `db` directory where the database files will live in. In your terminal navigate to the `root` of your system by doing `cd ..` until you reach the top directory. You can create the directory by running `sudo mkdir -p /data/db`. Now open a different tab in your terminal and run `mongod` to start the Mongo server.
