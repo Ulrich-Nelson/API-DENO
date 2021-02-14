@@ -1,33 +1,15 @@
 # API-DENO
 
-
-
-
-
-
-This project is an application skeleton for a typical [Node.js](https://nodejs.org/) web app.
+This project is an application skeleton for a typical [Node.js](https://deno.land/) web app.
 
 ## Getting Started
 To get you started you can simply clone the repository:
 
 ```
-git clone https://github.com/Flones/DropBox
+https://github.com/Ulrich-Nelson/API-DENO
 ```
-and install the dependencies
-```
-npm install
-```
-#packages installés
 
-https://www.npmjs.com/package/mongoose
-https://www.npmjs.com/package/pm2
-https://www.npmjs.com/package/body-parser
-https://www.npmjs.com/package/router
-https://www.npmjs.com/package/cors
-https://www.npmjs.com/package/bcryptjs
-https://www.npmjs.com/package/jsonwebtoken
-
-### Prerequisites
+## Prerequisites
 You need git to clone the repository. You can get git from
 [http://git-scm.com/](http://git-scm.com/).
 
