@@ -1,6 +1,6 @@
 # API-DENO
 
-This project is an application skeleton for a typical [Node.js](https://deno.land/) web app.
+This project is an application skeleton for a typical [Deno.ts](https://deno.land/) web app.
 
 ## Getting Started
 To get you started you can simply clone the repository:
@@ -16,9 +16,6 @@ You need git to clone the repository. You can get git from
 Before you start, check it or install Deno on your machine.
 Deno est fourni comme un exécutable unique sans dépendances. Vous pouvez l'installer à l'aide des programmes d'installation ci-dessous ou télécharger un binaire de version à partir de la page des versions .
 
-```
-https://deno.land/
-```
 
 #### Shell (Mac, Linux):
 
