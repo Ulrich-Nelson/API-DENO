@@ -54,6 +54,7 @@ The project uses MongoDB as a database. If you are on Mac and using Homebrew pac
 
 ### Start the MongoDB server
 First we need to create the `db` directory where the database files will live in. In your terminal navigate to the `root` of your system by doing `cd ..` until you reach the top directory. You can create the directory by running `sudo mkdir -p /data/db`. Now open a different tab in your terminal and run `mongod` to start the Mongo server.
+(https://www.mongodb.com/try/download)
 
 ### Run the Application
 
