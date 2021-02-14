@@ -7,6 +7,7 @@ const route: Application = opine();
 
 route.post('/', [authMiddleware], SongControllers.createOneSong);
 route.get('/', [authMiddleware], SongControllers.getAllSongs);
+route.get('/play/:fileName', [authMiddleware], SongControllers.playSong);
 route.get('/:id', [authMiddleware], SongControllers.getOneSong);
 
 export { route as SongRouter };

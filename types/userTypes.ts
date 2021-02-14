@@ -17,6 +17,8 @@ export type allChildType = {
     dateNaissance: string,
     subscription: subscriptionType,
 
+    card?: Array<cardType>
+
     createdAt: Date,
     updateAt: Date,
 
@@ -25,4 +27,11 @@ export type allChildType = {
     isActive?: boolean;
     lastLogin?: Date,
     attempt?: number
+}
+
+export type cardType = {
+    id : number,
+    cartNumber: string,
+    month: string,
+    year: string,
 }

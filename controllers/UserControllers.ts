@@ -3,6 +3,9 @@ import { sendResponse } from "../helpers/response.helpers.ts";
 import { Request, Response } from "https://deno.land/x/opine@1.0.2/src/types.ts";
 import UserInterfaces from "../interfaces/UserInterfaces.ts";
 import { sendMail } from "../helpers/email.helpers.ts";
+import CardException from "../exceptions/CardException.ts";
+import { addCardStripe, addCustomerStripe, paymentStripe, updateCustomerCardStripe } from "../helpers/stripe.helpers.ts";
+import { BillModels } from "../models/BillModels.ts";
 
 export class UserControllers {
 
@@ -103,15 +106,6 @@ export class UserControllers {
     }
 
     /**
-     * Subscription function (POST /subscription)
-     * @param req 
-     * @param res 
-     */
-    static subscription = async(req: Request, res: Response) => {
-
-    }
-
-    /**
      * Edit user function (PUT /user)
      * @param req 
      * @param res 
@@ -143,7 +137,7 @@ export class UserControllers {
             sendResponse(res, 200, body)
         } catch (err) {
             const body = { error: true, message: err.message }
-            if (err.message === 'Une ou plusieurs données obligatoire sont manquantes')sendResponse(res, 409, body);
+            if (err.message === 'Une ou plusieurs données obligatoire sont manquantes')sendResponse(res, 400, body);
         }
     }
 
@@ -324,16 +318,18 @@ export class UserControllers {
             // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
             const request: any = req;
             const user: UserInterfaces = request.user;
-            if(user.role !== 'Tuteur')throw new Error ('Votre token \'est pas correct');
+            if(user.role !== 'Tuteur')throw new Error (`Votre token n'est pas correct`);
 
             // désactiver(supprimer) le compte de l'utilisateur
             user.isActive = false;
+            user.token = '';
+            user.refreshToken = '';
             await UserModels.update(user);
 
             // désactiver(supprimer) le compte des enfants
             await UserModels.updateAllChild(user)
 
-             // Envoi de la réponse
+            // Envoi de la réponse
             const body = {
                 error: false, 
                 message: "Votre compte et le compte de vos enfants ont été supprimés avec succès",
@@ -344,7 +340,7 @@ export class UserControllers {
 
         } catch (err) {
             const body = { error: true, message: err.message }
-            if (err.message === 'Votre token n\'est pas correct')sendResponse(res, 401, body);
+            if (err.message === `Votre token n'est pas correct`)sendResponse(res, 401, body);
         }
     }
 
@@ -354,8 +350,145 @@ export class UserControllers {
      * @param res 
      */
     static addCart = async(req: Request, res: Response) => {
+        try {
+            // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
+            const request: any = req;
+            const user: UserInterfaces = request.user;
+            if(user.role !== 'Tuteur')throw new Error (`Vos droits d'accès ne permettent pas d'accéder à la ressource`);
 
+            // Vérification de l'existance des données et de leurs formats
+            const {cartNumber, month, year} = req.body;
+
+            if (!cartNumber || !month || !year || !req.body.default === undefined) throw new Error ('Une ou plusieurs données obligatoire sont manquantes');
+
+            if (!CardException.checkCardNumber(cartNumber)) throw new Error ('Une ou plusieurs données sont erronées');
+            if (!CardException.checkCardYear(year)) throw new Error ('Une ou plusieurs données sont erronées');
+            if (!CardException.checkCardMonth(month)) throw new Error ('Une ou plusieurs données sont erronées');
+            if (!CardException.checkDefault(req.body.default)) throw new Error ('Une ou plusieurs données sont erronées');
+
+            // Vérification de la validité de la carte
+            addCardStripe(cartNumber, month, year).then(
+                () => {
+                    try {
+                        // Vérification de si la carte existe déjà
+                        const filterCard = user.card.filter((card) => card.cartNumber === cartNumber)
+    
+                        if (filterCard.length === 0) user.card.push({id: user.card.length + 1, cartNumber: cartNumber, month: month, year: year});
+                        else throw new Error('La carte existe déjà');
+    
+                        // Update de la carte dans la base de donnée
+                        UserModels.update(user);
+                        
+                        // Envoi de la réponse
+                        const body = {
+                            error: false, 
+                            message: "Vos données ont été mises à jour",
+                        }
+    
+                        // Envoi de la réponse
+                        sendResponse(res, 200, body);
+                    } catch (err) {
+                        const body = { error: true, message: err.message }
+                        if (err.message === 'La carte existe déjà')sendResponse(res, 409, body);
+                    }
+                },
+                () => {
+                    try {
+                        throw new Error('Informations bancaire incorrectes')
+                    } catch (err) {
+                        const body = { error: true, message: err.message }
+                        if (err.message === 'Informations bancaire incorrectes')sendResponse(res, 402, body);
+                    }
+                }
+            );
+
+        } catch (err) {
+            const body = { error: true, message: err.message }
+            if (err.message === 'Une ou plusieurs données obligatoire sont manquantes')sendResponse(res, 400, body);
+            if (err.message === 'Une ou plusieurs données sont erronées')sendResponse(res, 409, body);
+            if (err.message === `Vos droits d'accès ne permettent pas d'accéder à la ressource`)sendResponse(res, 403, body);
+        }
+    }   
+
+    /**
+     * Subscription function (POST /subscription)
+     * @param req 
+     * @param res 
+     */
+    static subscription = async(req: Request, res: Response) => {
+        try {
+            // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
+            const request: any = req;
+            const user: UserInterfaces = request.user;
+            if(user.role !== 'Tuteur')throw new Error (`Vos droits d'accès ne permettent pas d'accéder à la ressource`);
+
+            // Vérification de l'existance des données 
+            const {id, cvc} = req.body;
+            if (!id === undefined || !cvc) throw new Error ('Une ou plusieurs données obligatoire sont manquantes');
+
+            // Check de la validité du cvc
+            if (!CardException.checkCVC(parseInt(cvc))) throw new Error ('Une ou plusieurs données sont erronées');
+
+            // Vérification de si l'utilisateur à bien la carte
+            if (user.card.length === 0) throw new Error('Veuillez compléter votre profil avec une carte de crédit');
+            const card = user.card.filter((card) => card.id === parseInt(id))[0];
+            if (!card) throw new Error('Veuillez compléter votre profil avec une carte de crédit');
+
+             // Création de la carte pour le payement
+            addCardStripe(parseInt(card.cartNumber), parseInt(card.month), parseInt(card.year)).then(
+                (data) => {
+                    const stripeCard = data.data;
+                    // Création d'un utilisateur stripe
+                    addCustomerStripe(user.email, user.firstname + ' ' + user.lastname).then(
+                        (data) => {
+                            const stripeCustomer = data.data;
+                            // Ajout de la carte au customer
+                            updateCustomerCardStripe(stripeCustomer.id, stripeCard.id).then(
+                                async () => {
+                                    // Payement de l'objet différent en fonction de si premier abonnement ou non
+                                    const alreadySubscribe = (await BillModels.getAllBill(<string>user._id)).length !== 0;
+
+                                    if (alreadySubscribe) {
+                                        paymentStripe(stripeCustomer.id, 'price_1IHs3OFBexKqC7NADJEtiMvS').then(
+                                            async (data) => {
+                                                await UserModels.updateSubscription(user, 1);
+                                                const facture = new BillModels(<string>user._id, data?.data.id , new Date(), 4.50, 4.99, 'Stripe');
+                                                await facture.insert();
+                                                sendResponse(res, 200, {error: true, message: `Votre abonnement a bien été mise à jour`});
+                                            },
+                                            () => sendResponse(res, 402, {error: true, message: `Echec du payement de l'offre`}),
+                                        );
+                                    } else {
+                                        await UserModels.updateSubscription(user, 1);
+                                        setTimeout(() => {
+                                            paymentStripe(stripeCustomer.id, 'price_1IHs3OFBexKqC7NADJEtiMvS').then(
+                                                async (data) => {
+                                                    await UserModels.updateSubscription(user, 1);
+                                                    await sendMail(user.email);
+                                                    const facture = new BillModels(<string>user._id, data?.data.id , new Date(), 4.50, 4.99, 'Stripe');
+                                                    await facture.insert();  
+                                                },
+                                                async () => await UserModels.updateSubscription(user, 0),
+                                            );
+                                        },  60000 * 5);
+                                        sendResponse(res, 200, {error: true, message: `Votre période d'essai viens d'être activé - 5min`});
+                                    }
+                                },
+                                () => sendResponse(res, 402, {error: true, message: `Echec du payement de l'offre`}),
+                            )
+                        },
+                        () => sendResponse(res, 402, {error: true, message: `Echec du payement de l'offre`}),
+                    );
+                },
+                () => sendResponse(res, 402, {error: true, message: `Echec du payement de l'offre`}),
+            );
+        } catch (err) {
+            const body = { error: true, message: err.message }
+            if (err.message === 'Une ou plusieurs données obligatoire sont manquantes')sendResponse(res, 400, body);
+            if (err.message === 'Une ou plusieurs données sont erronées')sendResponse(res, 409, body);
+            if (err.message === `Vos droits d'accès ne permettent pas d'accéder à la ressource`)sendResponse(res, 403, body);
+            if (err.message === 'Veuillez compléter votre profil avec une carte de crédit')sendResponse(res, 403, body);
+        }
     }
 
-    
 }

@@ -31,7 +31,7 @@ export class BillControllers {
                 bill: {
                     user_id: bill.user_id,
                     id_Stripe: bill.id_Stripe,
-                    date_payement: bill.date_payement,
+                    date_payment: bill.date_payment,
                     montant_ht: bill.montant_ht,
                     montant_ttc: bill.montant_ttc,
                     source: bill.source,
