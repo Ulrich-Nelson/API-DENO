@@ -11,19 +11,19 @@ export class BillModels implements BillInterfaces {
 
     user_id: string;
     id_Stripe: string;
-    date_payement: Date;
-    montant_ht: string;
-    montant_ttc: string;
+    date_payment: Date | string;
+    montant_ht: number;
+    montant_ttc: number;
     source: string;
 
     createdAt: Date;
     updateAt: Date;
 
-    constructor(user_id: string, id_Stripe: string, date_payement: Date, montant_ht: string, montant_ttc: string, source: string, createdAt: Date = new Date(), updateAt: Date = new Date()) {
+    constructor(user_id: string, id_Stripe: string, date_payement: Date, montant_ht: number, montant_ttc: number, source: string, createdAt: Date = new Date(), updateAt: Date = new Date()) {
         this.billdb = db.collection < BillInterfaces > ("bills");
         this.user_id = user_id;
         this.id_Stripe = id_Stripe;
-        this.date_payement = new Date(date_payement);
+        this.date_payment = new Date(date_payement);
         this.montant_ht = montant_ht;
         this.montant_ttc = montant_ttc;
         this.source = source;
@@ -38,7 +38,7 @@ export class BillModels implements BillInterfaces {
         this._id = await this.billdb.insertOne({
             user_id : new Bson.ObjectId(this.user_id),
             id_Stripe : this.id_Stripe,
-            date_payement : this.date_payement,
+            date_payment : this.date_payment,
             montant_ht : this.montant_ht,
             montant_ttc : this.montant_ttc,
             source : this.source,
@@ -73,6 +73,8 @@ export class BillModels implements BillInterfaces {
         // On enlève les données inutiles
         bills.map((item) => {
             Object.assign(item, {id: item._id});
+            const date = <Date>(item.date_payment);
+            item.date_payment = formatPayementDate(date);
             delete item._id;
             delete item.user_id;
         });
@@ -81,4 +83,8 @@ export class BillModels implements BillInterfaces {
         if (bills) return bills;
         else return [];
     }
+}
+
+export const formatPayementDate = (date: Date) => {
+    return date.getUTCFullYear() + '-' + ((date.getUTCMonth() < 10) ? '0' + (date.getUTCMonth() + 1) : (date.getUTCMonth() + 1))  + '-' + ((date.getUTCDate() < 10) ? '0' + date.getUTCDate() : date.getUTCDate()) + ' ' + ((date.getUTCHours() < 10) ? '0' + (date.getUTCHours() + 1) : (date.getUTCHours() + 1))+ ':' + ((date.getUTCMinutes() < 10) ? '0' + date.getUTCMinutes() : date.getUTCMinutes())+ ':' + ((date.getUTCSeconds() < 10) ? '0' + date.getUTCSeconds() : date.getUTCSeconds())
 }

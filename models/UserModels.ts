@@ -1,7 +1,7 @@
 import { db } from "../db/db.ts";
 import { comparePass, hash } from "../helpers/password.helpers.ts";
 import UserInterfaces from "../interfaces/UserInterfaces.ts";
-import { userRoleType, sexeType, subscriptionType, allChildType } from "../types/userTypes.ts";
+import { userRoleType, sexeType, subscriptionType, allChildType, cardType } from "../types/userTypes.ts";
 import { Bson } from "https://deno.land/x/mongo@v0.21.2/mod.ts";
 import { getAuthToken } from "../helpers/jwt.helpers.ts";
 
@@ -23,6 +23,8 @@ export class UserModels implements UserInterfaces {
     role: userRoleType;
     dateNaissance: string;
     subscription: subscriptionType;
+
+    card: Array<cardType>
 
     createdAt: Date;
     updateAt: Date;
@@ -49,6 +51,9 @@ export class UserModels implements UserInterfaces {
         this.role = role;
         this.dateNaissance = dateNaissance;
         this.subscription = subscription;
+
+        this.card = [];
+
         this.createdAt = createdAt; 
         this.updateAt = updateAt;
         this.lastLogin = lastLogin;
@@ -79,6 +84,7 @@ export class UserModels implements UserInterfaces {
             role : this.role,
             dateNaissance : this.dateNaissance,
             subscription : this.subscription,
+            card: this.card,
             createdAt: this.createdAt,
             updateAt: this.updateAt,
             lastLogin : new Date(),
@@ -95,8 +101,6 @@ export class UserModels implements UserInterfaces {
         this._id =  this.userdb.insertOne(toInsert);
     };
 
-
-
     /**
      * Modification d'un utilisateur
      * @param user UserInterface
@@ -109,8 +113,20 @@ export class UserModels implements UserInterfaces {
         }
     }
 
+    /**
+     * Modification d'un utilisateur et de ses enfants
+     * @param user UserInterface
+     */
+    static async updateSubscription(user: UserInterfaces, value: 0 | 1): Promise <void> {
+        try {
+            await this.userdb.updateOne({_id: user._id}, { $set:{ subscription: value }});
+            await this.userdb.updateMany({id_parent: user._id}, { $set:{ subscription: value }});
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
-     /**
+    /**
      * suppression d'un enfant appartement à un parent
      * @param user userInterface
      */
@@ -122,14 +138,13 @@ export class UserModels implements UserInterfaces {
         }
     }
 
-
     /**
      * désactiver(supprimer) le compte de tout les enfants d'un tuteur
      * @param user userIinterface
      */
     static async updateAllChild(user: UserInterfaces): Promise <void> {
         try {
-            await this.userdb.updateMany({id_parent: user._id},{ $set:{ isActive: false}});
+            await this.userdb.updateMany({id_parent: user._id},{ $set:{ isActive: false, token: ''}});
         } catch (err) {
             console.log(err);
         }
@@ -157,6 +172,7 @@ export class UserModels implements UserInterfaces {
                 delete target.lastLogin
                 delete target.attempt
                 delete target.isActive
+                delete target.card
             })
         
         // retourner les données si elles existent
@@ -167,10 +183,6 @@ export class UserModels implements UserInterfaces {
             console.log(err)
         }
     }
-
-
-
-
 
     /**
      * Génération du token et modification en base de donnée
@@ -204,7 +216,7 @@ export class UserModels implements UserInterfaces {
         if (!user) throw new Error('Email/password incorrect');
 
         // vérifier si le compte de l'utilisateur a été supprimé(désactivé)
-        if(user.isActive === false)throw new Error('Email/password incorrect');
+        if(user.isActive === false) throw new Error('Email/password incorrect');
 
         // Si l'utilisateur à respecter les deux minutes d'attente on remet sont nombres d'essai à 0
         if(user.attempt >= 5  && ((new Date().getTime() - user.lastLogin.getTime()) / 1000 / 60) >= 2) {
@@ -234,8 +246,6 @@ export class UserModels implements UserInterfaces {
 
         return (user);
     }
-
-    
     
     /**
      * Récupération d'un utilisateur par son id et optionnelement son token pour s'assurer que c'est un user connecté.
@@ -252,7 +262,4 @@ export class UserModels implements UserInterfaces {
         else return null;
     }
 
-
-
-    
 }

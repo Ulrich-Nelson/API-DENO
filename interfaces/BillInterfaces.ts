@@ -4,9 +4,9 @@ export default interface BillInterfaces {
     user_id: { $oid: string } | string | undefined;
 
     id_Stripe: string;
-    date_payement: Date;
-    montant_ht: string;
-    montant_ttc: string;
+    date_payment: Date | string;
+    montant_ht: number;
+    montant_ttc: number;
     source: string;
 
     createdAt: Date;

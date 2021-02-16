@@ -8,6 +8,6 @@ export default class UserException extends Error {
      * @param lastname 
      */
     static checkNameLength(data: string) : boolean {
-        return !(data.length < 2 || data.length > 25);
+        return !(data.trim().length < 2 || data.trim().length > 25);
     }
 }

@@ -1,4 +1,4 @@
-import { userRoleType, sexeType, subscriptionType } from "../types/userTypes.ts";
+import { userRoleType, sexeType, subscriptionType, cardType } from "../types/userTypes.ts";
 
 export default interface UserInterfaces {
 
@@ -14,6 +14,8 @@ export default interface UserInterfaces {
     dateNaissance: string;
     subscription: subscriptionType;
 
+    card: Array<cardType>
+    
     createdAt: Date;
     updateAt: Date;
 

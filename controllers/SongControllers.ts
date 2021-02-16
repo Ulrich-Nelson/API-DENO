@@ -42,7 +42,7 @@ export class SongControllers {
             }
 
             // Envoi de la réponse
-            sendResponse(res, 200, body)
+            sendResponse(res, 201, body)
 
         } catch (err) {
 
@@ -74,7 +74,7 @@ export class SongControllers {
                 error: false, 
                 songs: songs
             }
-            sendResponse(res, 201, body);
+            sendResponse(res, 200, body);
         } catch (err) {
             // Création de la réponse d'erreur
             const body = { error: true, message: err.message }
@@ -98,7 +98,6 @@ export class SongControllers {
 
             // Récupération du son par rapport à l'id
             const song = await SongModels.getOneSong(req.params.id);
-            if (!song) throw new Error('Aucun son ne correspond à cet id');
 
             // Création de la réponse
             const body = {
@@ -114,7 +113,7 @@ export class SongControllers {
                     updateAt: song.updateAt,
                 }
             }
-            sendResponse(res, 200, body);
+            sendResponse(res, 201, body);
         } catch (err) {
             // Création de la réponse d'erreur
             const body = { error: true, message: err.message }
@@ -130,8 +129,24 @@ export class SongControllers {
      * @param res 
      */
     static playSong = async(req: Request, res: Response) => {
-        const filename = 'C:/Users/seb_l/Desktop/Application web/API-DENO/public/assets/mp3/file.mp3';
-        await play(filename);
+        try {
+            const fileName = req.params.fileName
+
+            // Récupération de l'utilisateur grâce au Authmiddleware qui rajoute le token dans req
+            const request: any = req;
+            const user: UserInterfaces = request.user;
+
+            // Vérification de l'abonnement de l'utilisateur
+            if(user.subscription !== 1) throw new Error("Votre abonnement ne permet pas d'accéder à la ressource");
+
+            const filename = 'C:/Users/seb_l/Desktop/Application web/API-DENO/public/assets/mp3/' + fileName;
+            await play(filename);
+
+        } catch (err) {
+            // Création de la réponse d'erreur
+            const body = { error: true, message: err.message }
+            if (err.message === "Votre abonnement ne permet pas d'accéder à la ressource") sendResponse(res, 403, body);
+        }
     }
 
 }
