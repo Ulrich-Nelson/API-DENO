@@ -7,6 +7,12 @@ import CardException from "../exceptions/CardException.ts";
 import { addCardStripe, addCustomerStripe, paymentStripe, updateCustomerCardStripe } from "../helpers/stripe.helpers.ts";
 import { BillModels } from "../models/BillModels.ts";
 
+import { config } from '../config/config.ts';
+
+const {
+    STRIPE_PRICE_KEY,
+} = config;
+
 export class UserControllers {
 
     /**
@@ -449,7 +455,7 @@ export class UserControllers {
                                     const alreadySubscribe = (await BillModels.getAllBill(<string>user._id)).length !== 0;
 
                                     if (alreadySubscribe) {
-                                        paymentStripe(stripeCustomer.id, 'price_1IHs3OFBexKqC7NADJEtiMvS').then(
+                                        paymentStripe(stripeCustomer.id, STRIPE_PRICE_KEY).then(
                                             async (data) => {
                                                 await UserModels.updateSubscription(user, 1);
                                                 const facture = new BillModels(<string>user._id, data?.data.id , new Date(), 4.50, 4.99, 'Stripe');
@@ -461,7 +467,7 @@ export class UserControllers {
                                     } else {
                                         await UserModels.updateSubscription(user, 1);
                                         setTimeout(() => {
-                                            paymentStripe(stripeCustomer.id, 'price_1IHs3OFBexKqC7NADJEtiMvS').then(
+                                            paymentStripe(stripeCustomer.id, STRIPE_PRICE_KEY).then(
                                                 async (data) => {
                                                     await UserModels.updateSubscription(user, 1);
                                                     await sendMail(user.email);
